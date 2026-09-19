@@ -1,0 +1,210 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#07121d">
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 1 1'%3E%3C/svg%3E">
+  <title>OWON Control</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <a class="brand" href="/" aria-label="OWON Control home">
+        <span class="brand-mark" aria-hidden="true">◒</span>
+        <span>OWON <em>Control</em></span>
+      </a>
+      <div id="connection-banner" class="connection pending" role="status" aria-live="polite">
+        <span id="connection-dot" class="status-dot pending" aria-hidden="true"></span>
+        <span id="connection-label">Loading device…</span>
+      </div>
+    </header>
+
+    <section class="hero panel">
+      <div>
+        <p class="eyebrow">LIVE INSTRUMENT CONSOLE</p>
+        <h1 id="device-model">OWON oscilloscope</h1>
+        <p id="device-meta" class="muted">Waiting for daemon identity</p>
+        <p id="hydration-status" class="status-line" role="status" aria-live="polite">Hydrating device and state…</p>
+        <div id="capability-list" class="tag-list" aria-label="Device capabilities"></div>
+      </div>
+      <div class="transport-actions" aria-label="Acquisition actions">
+        <button class="button primary" type="button" data-action="/api/run">Run</button>
+        <button class="button" type="button" data-action="/api/single">Single</button>
+        <button class="button danger" type="button" data-action="/api/stop">Stop</button>
+      </div>
+    </section>
+
+    <section class="metric-grid" aria-label="Live measurements">
+      <article class="metric panel"><span class="metric-label">CH1 peak-to-peak</span><strong id="metric-ch1">—</strong><span id="metric-ch1-unit" class="metric-unit">waiting</span></article>
+      <article class="metric panel"><span class="metric-label">CH2 peak-to-peak</span><strong id="metric-ch2">—</strong><span id="metric-ch2-unit" class="metric-unit">waiting</span></article>
+      <article class="metric panel"><span class="metric-label">Acquisition</span><strong id="metric-acquisition">—</strong><span id="metric-trigger" class="metric-unit">waiting</span></article>
+      <article class="metric panel"><span class="metric-label">DMM reading</span><strong id="metric-dmm">—</strong><button class="text-button" type="button" data-get="/api/dmm/measurement">Refresh DMM</button></article>
+    </section>
+
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+
+    <section class="workspace">
+      <div class="column">
+        <article class="panel control-card">
+          <div class="card-heading"><div><p class="eyebrow">INPUT</p><h2>Channels</h2></div><span class="badge">CH 1 / CH 2</span></div>
+          <p class="hint">Only verified channel writes are shown. Leave an optional field untouched to omit it from the protobuf patch.</p>
+          <div class="channel-grid">
+            <form data-api="/api/channel" data-toast="Channel 1 updated">
+              <h3>Channel 1</h3>
+              <label>Channel<select name="channel"><option value="CHANNEL_1">Channel 1</option></select></label>
+              <div class="field-row"><label class="check"><input name="display" type="checkbox" data-optional> Display</label><label>Probe ×<input name="probeAttenuation" data-optional type="number" min="1" step="1" placeholder="1, 10…"></label></div>
+              <label>Coupling<select name="coupling" data-optional><option value="" selected>Leave unchanged</option><option value="COUPLING_DC">DC</option><option value="COUPLING_AC">AC</option><option value="COUPLING_GROUND">Ground</option></select></label>
+              <label>Scale<input name="scale" data-optional placeholder="500mV"></label>
+              <label>Offset (whole divisions)<input name="offsetDivisions" data-optional type="number" step="1" min="-200" max="200" placeholder="0"></label>
+              <button class="button compact" type="submit">Apply CH1</button>
+            </form>
+            <form data-api="/api/channel" data-toast="Channel 2 updated">
+              <h3>Channel 2</h3>
+              <label>Channel<select name="channel"><option value="CHANNEL_2">Channel 2</option></select></label>
+              <div class="field-row"><label class="check"><input name="display" type="checkbox" data-optional> Display</label><label>Probe ×<input name="probeAttenuation" data-optional type="number" min="1" step="1" placeholder="1, 10…"></label></div>
+              <label>Coupling<select name="coupling" data-optional><option value="" selected>Leave unchanged</option><option value="COUPLING_DC">DC</option><option value="COUPLING_AC">AC</option><option value="COUPLING_GROUND">Ground</option></select></label>
+              <label>Scale<input name="scale" data-optional placeholder="500mV"></label>
+              <label>Offset (whole divisions)<input name="offsetDivisions" data-optional type="number" step="1" min="-200" max="200" placeholder="0"></label>
+              <button class="button compact" type="submit">Apply CH2</button>
+            </form>
+          </div>
+        </article>
+
+        <article class="panel control-card">
+          <div class="card-heading"><div><p class="eyebrow">TIMEBASE</p><h2>Acquisition &amp; trigger</h2></div></div>
+          <p class="hint">Average mode/count and external/ground trigger controls are not verified for this device and are intentionally unavailable.</p>
+          <form data-api="/api/acquisition" data-toast="Acquisition updated">
+            <div class="form-grid"><label>Mode<select name="mode" data-optional><option value="" selected>Leave unchanged</option><option value="ACQUISITION_MODE_SAMPLE">Sample</option><option value="ACQUISITION_MODE_PEAK_DETECT">Peak detect</option></select></label><label>Memory depth<select name="memoryDepth" data-optional><option value="" selected>Leave unchanged</option><option value="ACQUISITION_MEMORY_DEPTH_4K">4K</option><option value="ACQUISITION_MEMORY_DEPTH_8K">8K</option></select></label></div>
+            <button class="button compact" type="submit">Apply acquisition</button>
+          </form>
+          <hr>
+          <form data-api="/api/horizontal" data-toast="Horizontal controls updated">
+            <div class="form-grid"><label>Time scale<input name="scale" data-optional placeholder="1.0ms"></label><label>Offset (whole divisions)<input name="offsetDivisions" data-optional type="number" step="1" placeholder="0"></label></div>
+            <p class="hint">Screen-header offsets in the state view are raw values with undocumented units, not values to copy into these controls.</p>
+            <button class="button compact" type="submit">Apply horizontal</button>
+          </form>
+          <hr>
+          <form data-api="/api/trigger" data-toast="Trigger updated">
+            <div class="form-grid three"><label>Source<select name="source" data-optional><option value="" selected>Leave unchanged</option><option value="TRIGGER_SOURCE_CHANNEL_1">Channel 1</option><option value="TRIGGER_SOURCE_CHANNEL_2">Channel 2</option></select></label><label>Slope<select name="slope" data-optional><option value="" selected>Leave unchanged</option><option value="TRIGGER_SLOPE_RISING">Rising</option><option value="TRIGGER_SLOPE_FALLING">Falling</option></select></label><label>Sweep<select name="sweep" data-optional><option value="" selected>Leave unchanged</option><option value="TRIGGER_SWEEP_AUTO">Auto</option><option value="TRIGGER_SWEEP_NORMAL">Normal</option><option value="TRIGGER_SWEEP_SINGLE">Single</option></select></label></div>
+            <div class="form-grid"><label>Coupling<select name="coupling" data-optional><option value="" selected>Leave unchanged</option><option value="COUPLING_DC">DC</option><option value="COUPLING_AC">AC</option></select></label><label>Level volts<input name="levelVolts" data-optional type="number" step="any" placeholder="0"></label></div>
+            <button class="button compact" type="submit">Apply trigger</button>
+          </form>
+        </article>
+
+        <details class="panel control-card disclosure">
+          <summary><span class="disclosure-copy"><span class="eyebrow">MEASUREMENTS</span><span class="disclosure-title">Visibility &amp; live selectors</span></span><span class="badge">7 KINDS</span></summary>
+          <div class="disclosure-body">
+            <form data-api="/api/measurement" data-toast="Measurement display updated">
+              <label class="check"><input name="display" type="checkbox" data-optional> Show measurements</label>
+              <button class="button compact" type="submit">Apply visibility</button>
+            </form>
+            <p class="hint">Selectors control the bounded Subscribe stream; no unsupported replacement command is sent.</p>
+            <div class="selector-grid" aria-label="Subscribe measurement selectors">
+              <fieldset><legend>Channel 1</legend>
+                <label class="check"><input type="checkbox" data-measurement="CHANNEL_1:MEASUREMENT_KIND_MAXIMUM"> Maximum</label>
+                <label class="check"><input type="checkbox" data-measurement="CHANNEL_1:MEASUREMENT_KIND_MINIMUM"> Minimum</label>
+                <label class="check"><input type="checkbox" data-measurement="CHANNEL_1:MEASUREMENT_KIND_PEAK_TO_PEAK" checked> Peak-to-peak</label>
+                <label class="check"><input type="checkbox" data-measurement="CHANNEL_1:MEASUREMENT_KIND_AMPLITUDE"> Amplitude</label>
+                <label class="check"><input type="checkbox" data-measurement="CHANNEL_1:MEASUREMENT_KIND_AVERAGE"> Average</label>
+                <label class="check"><input type="checkbox" data-measurement="CHANNEL_1:MEASUREMENT_KIND_PERIOD"> Period</label>
+                <label class="check"><input type="checkbox" data-measurement="CHANNEL_1:MEASUREMENT_KIND_FREQUENCY"> Frequency</label>
+              </fieldset>
+              <fieldset><legend>Channel 2</legend>
+                <label class="check"><input type="checkbox" data-measurement="CHANNEL_2:MEASUREMENT_KIND_MAXIMUM"> Maximum</label>
+                <label class="check"><input type="checkbox" data-measurement="CHANNEL_2:MEASUREMENT_KIND_MINIMUM"> Minimum</label>
+                <label class="check"><input type="checkbox" data-measurement="CHANNEL_2:MEASUREMENT_KIND_PEAK_TO_PEAK" checked> Peak-to-peak</label>
+                <label class="check"><input type="checkbox" data-measurement="CHANNEL_2:MEASUREMENT_KIND_AMPLITUDE"> Amplitude</label>
+                <label class="check"><input type="checkbox" data-measurement="CHANNEL_2:MEASUREMENT_KIND_AVERAGE"> Average</label>
+                <label class="check"><input type="checkbox" data-measurement="CHANNEL_2:MEASUREMENT_KIND_PERIOD"> Period</label>
+                <label class="check"><input type="checkbox" data-measurement="CHANNEL_2:MEASUREMENT_KIND_FREQUENCY"> Frequency</label>
+              </fieldset>
+            </div>
+          </div>
+        </details>
+
+        <details class="panel control-card disclosure">
+          <summary><span class="disclosure-copy"><span class="eyebrow">STREAM</span><span class="disclosure-title">Subscribe options</span></span><span class="badge">ONE / TAB</span></summary>
+          <div class="disclosure-body">
+            <div class="form-grid three"><label>Interval (ms)<input id="stream-interval" type="number" min="20" max="3600000" step="1" value="1000"></label><label>Queue capacity<input id="stream-queue" type="number" min="1" max="1024" step="1" value="128"></label><label class="check"><input id="stream-controls" type="checkbox" checked> Controls</label></div>
+            <div class="field-row"><label class="check"><input id="stream-header" type="checkbox"> Screen header</label><label class="check"><input id="stream-wave-ch1" type="checkbox"> Waveform CH1</label><label class="check"><input id="stream-wave-ch2" type="checkbox"> Waveform CH2</label></div>
+            <button id="stream-apply" class="button compact" type="button">Apply stream options</button>
+            <p class="hint">State, waveform, gap, and service-error events remain ordered by their daemon sequence. Raw waveform bytes are never plotted or decoded.</p>
+          </div>
+        </details>
+      </div>
+
+      <div class="column">
+        <details class="panel control-card disclosure">
+          <summary><span class="disclosure-copy"><span class="eyebrow">GENERATOR</span><span class="disclosure-title">Waveform output</span></span><span class="badge">WRITE ONLY</span></summary>
+          <div class="disclosure-body">
+            <p class="hint">Requested settings, not readback: no complete validated generator-state mapping is available. Frequency also sends your selected waveform. Command serialization is software-tested; physical setter acceptance and duty/rise/fall interpretation remain unverified.</p>
+            <form data-api="/api/generator" data-toast="Generator write applied">
+              <div class="form-grid three"><label>Waveform<select name="waveform" data-optional><option value="" selected>Leave unchanged</option><option value="GENERATOR_WAVEFORM_SINE">Sine</option><option value="GENERATOR_WAVEFORM_SQUARE">Square</option><option value="GENERATOR_WAVEFORM_RAMP">Ramp</option><option value="GENERATOR_WAVEFORM_PULSE">Pulse</option></select></label><label>Load<select name="load" data-optional><option value="" selected>Leave unchanged</option><option value="GENERATOR_LOAD_ON">ON</option><option value="GENERATOR_LOAD_OFF">OFF</option></select></label><label class="check"><input name="output" type="checkbox" data-optional> Output enabled</label></div>
+              <div class="form-grid three"><label>Frequency Hz<input name="frequencyHz" data-optional type="number" step="any"></label><label>Period s<input name="periodSeconds" data-optional type="number" step="any"></label><label>Amplitude V<input name="amplitudeVolts" data-optional type="number" step="any"></label></div>
+              <div class="form-grid three"><label>Offset V<input name="offsetVolts" data-optional type="number" step="any"></label><label>High V<input name="highVolts" data-optional type="number" step="any"></label><label>Low V<input name="lowVolts" data-optional type="number" step="any"></label></div>
+              <div class="form-grid three"><label>Symmetry %<input name="symmetryPercent" data-optional type="number" min="0" max="100" step="1"></label><label>Duty %<input name="dutyPercent" data-optional type="number" step="any"></label><label>Pulse width s<input name="pulseWidthSeconds" data-optional type="number" step="any"></label></div>
+              <div class="form-grid three"><label>Rise s<input name="risingSeconds" data-optional type="number" step="any"></label><label>Fall s<input name="fallingSeconds" data-optional type="number" step="any"></label><span></span></div>
+              <button class="button compact" type="submit">Apply generator</button>
+            </form>
+          </div>
+        </details>
+
+        <details class="panel control-card disclosure">
+          <summary><span class="disclosure-copy"><span class="eyebrow">MULTIMETER</span><span class="disclosure-title">DMM configuration</span></span></summary>
+          <div class="disclosure-body">
+            <form data-api="/api/dmm" data-toast="DMM updated">
+              <div class="form-grid three"><label>Function<select name="function" data-optional><option value="" selected>Leave unchanged</option><option value="DMM_FUNCTION_VOLTAGE">Voltage</option><option value="DMM_FUNCTION_CURRENT">Current</option><option value="DMM_FUNCTION_RESISTANCE">Resistance</option><option value="DMM_FUNCTION_CAPACITANCE">Capacitance</option><option value="DMM_FUNCTION_DIODE">Diode</option><option value="DMM_FUNCTION_CONTINUITY">Continuity</option></select></label><label>Current type<select name="currentType" data-optional aria-describedby="dmm-current-note"><option value="" selected>Leave unchanged</option><option value="DMM_CURRENT_TYPE_DC">DC</option><option value="DMM_CURRENT_TYPE_AC">AC</option></select></label><label>Range command<select name="range" data-optional><option value="" selected>Leave unchanged</option><option value="DMM_RANGE_ON">ON</option><option value="DMM_RANGE_MV">mV</option><option value="DMM_RANGE_V">V</option></select></label></div>
+              <div class="field-row"><label class="check"><input name="relative" type="checkbox" data-optional> Relative</label><label class="check"><input name="autoRange" type="checkbox" checked disabled data-fixed-value="true" aria-describedby="dmm-auto-note"> Automatic range</label></div>
+              <p id="dmm-current-note" class="hint" aria-live="polite">Voltage and Current require an AC/DC selection.</p>
+              <label>Observed range<output id="dmm-range-state" class="readout">—</output></label>
+              <p id="dmm-auto-note" class="hint">Each DMM request enables automatic range. Auto-off is unsupported. Range commands retain the verified ON/mV/V tokens; selections are not observed state.</p>
+              <button class="button compact" type="submit">Apply DMM</button>
+            </form>
+          </div>
+        </details>
+
+        <details class="panel control-card disclosure">
+          <summary><span class="disclosure-copy"><span class="eyebrow">CAPTURE</span><span class="disclosure-title">Screen waveform</span></span><span class="badge">RAW BYTES</span></summary>
+          <div class="disclosure-body">
+            <form data-api="/api/waveform" data-toast="Waveform captured">
+              <div class="form-grid"><label>Channel<select name="channel"><option value="CHANNEL_1">Channel 1</option><option value="CHANNEL_2">Channel 2</option></select></label><label class="check"><input name="screen" type="checkbox" checked disabled data-fixed-value="true"> Screen framing (required)</label></div>
+              <button class="button compact" type="submit">Capture waveform</button>
+            </form>
+            <pre id="waveform-result" class="result-box" aria-live="polite">No waveform captured yet.</pre>
+            <div class="result-actions"><button id="download-waveform" class="button compact" type="button" disabled>Download bytes</button><button id="inspect-header" class="button compact" type="button" disabled>Inspect header</button></div>
+            <pre id="waveform-header" class="result-box secondary" aria-live="polite">Header inspection unavailable until a capture.</pre>
+          </div>
+        </details>
+
+        <details class="panel control-card disclosure">
+          <summary><span class="disclosure-copy"><span class="eyebrow">ADVANCED</span><span class="disclosure-title">Raw command</span></span><span class="badge">EXPERT</span></summary>
+          <div class="disclosure-body">
+            <p class="hint">Execute uses the selected daemon framing. Response bytes stay base64/opaque; no response decoding is invented.</p>
+            <form data-api="/api/execute" data-toast="Command executed">
+              <div class="form-grid"><label>SCPI command<input name="command" required maxlength="4096" placeholder="*IDN?"></label><label>Response mode<select name="responseMode"><option value="RESPONSE_MODE_ASCII_LINE">ASCII line</option><option value="RESPONSE_MODE_NONE">No response</option><option value="RESPONSE_MODE_OWON_LENGTH_PREFIXED">OWON length-prefixed</option></select></label></div>
+              <button class="button compact" type="submit">Execute</button>
+            </form>
+            <pre id="command-result" class="result-box" aria-live="polite">No command response yet.</pre>
+            <button id="download-command" class="button compact" type="button" disabled>Download response bytes</button>
+          </div>
+        </details>
+
+        <details class="panel control-card disclosure">
+          <summary><span class="disclosure-copy"><span class="eyebrow">INSPECTION</span><span class="disclosure-title">State snapshot</span></span><span class="badge">NO PLOT</span></summary>
+          <div class="disclosure-body">
+            <p class="hint">The JSON below is the exact protobuf snapshot, including fields intentionally omitted by the daemon.</p>
+            <pre id="state-json" class="result-box" aria-live="polite">State is loading…</pre>
+            <div class="diagnostic-grid"><span title="Daemon publication sequence numbers skipped in this subscription">Last sequence<strong id="event-sequence">—</strong></span><span title="Daemon publication sequence numbers skipped in this subscription">Event sequence gaps<strong id="event-gaps">0</strong></span><span title="Captures explicitly reported missing by the daemon">Waveform gaps<strong id="waveform-gaps">0</strong></span><span>Retries<strong id="event-retries">0</strong></span></div>
+            <p id="last-update" class="hint">No event received</p>
+          </div>
+        </details>
+      </div>
+    </section>
+
+    <footer class="footer"><span>OWON WebUI · loopback only</span><span id="footer-status">Waiting for a device stream</span></footer>
+  </main>
+  <script src="/app.js" defer></script>
+</body>
+</html>

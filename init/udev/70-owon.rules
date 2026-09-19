@@ -1,0 +1,3 @@
+# This specific scope: OWON HDS2202S, USB serial 25061855 (VID:PID 5345:1234).
+# Allow users in plugdev and the active local seat to use libusb.
+SUBSYSTEM=="usb", ATTR{idVendor}=="5345", ATTR{idProduct}=="1234", ATTR{serial}=="25061855", GROUP="plugdev", MODE="0660", TAG+="uaccess"

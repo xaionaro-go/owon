@@ -1,0 +1,3 @@
+[submodule "imports/protobuf"]
+	path = imports/protobuf
+	url = https://github.com/protocolbuffers/protobuf.git
