@@ -3,6 +3,7 @@ package owonmodel
 import (
 	"fmt"
 	"math"
+	"strings"
 )
 
 const (
@@ -26,6 +27,38 @@ const (
 	//
 	// Example: compare a GeneratorWaveform value with GeneratorWaveformPulse.
 	GeneratorWaveformPulse
+	// GeneratorWaveformAmpALT selects the vendor's AmpALT builtin.
+	//
+	// Example: select AmpALT without implying a formula from its name.
+	GeneratorWaveformAmpALT
+	// GeneratorWaveformAttALT selects the vendor's AttALT builtin.
+	//
+	// Example: select AttALT independently of AmpALT.
+	GeneratorWaveformAttALT
+	// GeneratorWaveformStairDown selects the StairDn builtin.
+	//
+	// Example: select the vendor's descending staircase waveform.
+	GeneratorWaveformStairDown
+	// GeneratorWaveformStairUpDown selects the StairUD builtin.
+	//
+	// Example: select the vendor's up/down staircase waveform.
+	GeneratorWaveformStairUpDown
+	// GeneratorWaveformStairUp selects the StairUp builtin.
+	//
+	// Example: select the vendor's ascending staircase waveform.
+	GeneratorWaveformStairUp
+	// GeneratorWaveformBesselJ selects the Besselj builtin.
+	//
+	// Example: preserve the vendor's named J variant.
+	GeneratorWaveformBesselJ
+	// GeneratorWaveformBesselY selects the Bessely builtin.
+	//
+	// Example: preserve the vendor's named Y variant.
+	GeneratorWaveformBesselY
+	// GeneratorWaveformSinc selects the vendor's Sinc builtin.
+	//
+	// Example: select Sinc without implicitly enabling output.
+	GeneratorWaveformSinc
 )
 
 const (
@@ -60,7 +93,7 @@ type GeneratorPatch struct {
 	Waveform          *GeneratorWaveform
 	FrequencyHz       *float64
 	PeriodSeconds     *float64
-	AmplitudeVolts    *float64
+	AmplitudeVolts    *float64 // Volts peak-to-peak (Vpp).
 	OffsetVolts       *float64
 	HighVolts         *float64
 	LowVolts          *float64
@@ -73,7 +106,8 @@ type GeneratorPatch struct {
 	Output            *bool
 }
 
-// Validate checks generator membership and physical numeric representation, not device limits.
+// Validate checks generator membership, field relationships, and physical numeric representation.
+// Waveform-dependent fields require an explicit waveform; frequency and period are exclusive.
 //
 // Example: a finite positive frequency is valid independently of a model's maximum output frequency.
 func (request *GeneratorPatch) Validate() error {
@@ -84,7 +118,11 @@ func (request *GeneratorPatch) Validate() error {
 		return &ErrInvalidRequest{Reason: "generator patch is empty"}
 	}
 	if request.Waveform != nil {
-		if err := validateEnum("generator waveform", *request.Waveform, GeneratorWaveformSine, GeneratorWaveformSquare, GeneratorWaveformRamp, GeneratorWaveformPulse); err != nil {
+		if err := validateEnum("generator waveform", *request.Waveform,
+			GeneratorWaveformSine, GeneratorWaveformSquare, GeneratorWaveformRamp, GeneratorWaveformPulse,
+			GeneratorWaveformAmpALT, GeneratorWaveformAttALT, GeneratorWaveformStairDown, GeneratorWaveformStairUpDown,
+			GeneratorWaveformStairUp, GeneratorWaveformBesselJ, GeneratorWaveformBesselY, GeneratorWaveformSinc,
+		); err != nil {
 			return err
 		}
 	}
@@ -92,6 +130,12 @@ func (request *GeneratorPatch) Validate() error {
 		if err := validateEnum("generator load", *request.Load, GeneratorLoadOn, GeneratorLoadOff); err != nil {
 			return err
 		}
+	}
+	if request.FrequencyHz != nil && request.PeriodSeconds != nil {
+		return &ErrInvalidRequest{Reason: "set frequency or period, not both"}
+	}
+	if err := request.validateWaveformCompanion(); err != nil {
+		return err
 	}
 	for _, value := range []*float64{request.FrequencyHz, request.PeriodSeconds, request.PulseWidthSeconds, request.RisingSeconds, request.FallingSeconds} {
 		if value == nil {
@@ -112,6 +156,33 @@ func (request *GeneratorPatch) Validate() error {
 	return nil
 }
 
+// validateWaveformCompanion requires a waveform for fields whose meaning depends on it.
+//
+// Example: a period and duty request without a waveform reports both dependent fields.
+func (request *GeneratorPatch) validateWaveformCompanion() error {
+	if request.Waveform != nil {
+		return nil
+	}
+	var dependentFields []string
+	for _, field := range []struct {
+		Name    string
+		Present bool
+	}{
+		{"frequency", request.FrequencyHz != nil}, {"period", request.PeriodSeconds != nil},
+		{"symmetry", request.SymmetryPercent != nil}, {"duty", request.DutyPercent != nil},
+		{"pulse width", request.PulseWidthSeconds != nil}, {"rising", request.RisingSeconds != nil}, {"falling", request.FallingSeconds != nil},
+	} {
+		if !field.Present {
+			continue
+		}
+		dependentFields = append(dependentFields, field.Name)
+	}
+	if len(dependentFields) != 0 {
+		return &ErrInvalidRequest{Reason: "waveform is required when setting " + strings.Join(dependentFields, ", ")}
+	}
+	return nil
+}
+
 // GeneratorState contains observed signal-generator settings in explicit physical units.
 //
 // Example: frequency in Hz and period in seconds occupy independent fields.
@@ -119,7 +190,7 @@ type GeneratorState struct {
 	Waveform          GeneratorWaveform
 	FrequencyHz       float64
 	PeriodSeconds     float64
-	AmplitudeVolts    float64
+	AmplitudeVolts    float64 // Volts peak-to-peak (Vpp).
 	OffsetVolts       float64
 	HighVolts         float64
 	LowVolts          float64

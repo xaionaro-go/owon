@@ -106,7 +106,9 @@ func (backend *probeBlockingBackend) Commands() []string {
 func TestInstrumentAppliesTypedControlPatches(t *testing.T) {
 	t.Parallel()
 
-	backend := &scriptedBackend{}
+	backend := &scriptedBackend{Responses: map[string][]byte{
+		":DMM:CONFIGURE:VOLTAGE?": []byte("DC"),
+	}}
 	controller := newTestInstrument(t, backend)
 	mode := owonmodel.AcquisitionModePeakDetect
 	scale := "20us"
@@ -137,7 +139,11 @@ func TestInstrumentAppliesTypedControlPatches(t *testing.T) {
 		":FUNCTION:FREQUENCY 1000",
 		":CHANNEL OFF",
 		":DMM:CONFIGURE:VOLTAGE DC",
+		":DMM:CONFIGURE:VOLTAGE?",
+		":DMM:CONFIGURE:VOLTAGE?",
 		":DMM:AUTO ON",
+		":DMM:CONFIGURE:VOLTAGE?",
+		":DMM:CONFIGURE:VOLTAGE?",
 	}, backend.Commands)
 }
 
@@ -152,7 +158,7 @@ func TestInstrumentRejectsGeneratorFrequencyWithoutWaveformBeforeUSB(t *testing.
 	frequency := 1000.0
 
 	err := controller.SetGenerator(context.Background(), &owonmodel.GeneratorPatch{FrequencyHz: &frequency})
-	requireErrorType[*owonscpi.ErrInvalidSetting](t, err)
+	requireErrorType[*owonmodel.ErrInvalidRequest](t, err)
 	require.Empty(t, backend.Commands)
 }
 
@@ -176,19 +182,17 @@ func TestInstrumentSerializesTriggerVoltage(t *testing.T) {
 
 // TestInstrumentRejectsUndocumentedControlCommands verifies typed fields never invent SCPI.
 //
-// Example: averaging and visible-measurement replacement fail before a USB write.
+// Example: average-count and visible-measurement replacement fail before a USB write.
 func TestInstrumentRejectsUndocumentedControlCommands(t *testing.T) {
 	t.Parallel()
 
 	backend := &scriptedBackend{}
 	controller := newTestInstrument(t, backend)
-	average := owonmodel.AcquisitionModeAverage
 	averageCount := uint32(16)
 	replace := true
 	doNotReplace := false
 	autoRange := false
 
-	require.ErrorContains(t, controller.SetAcquisition(context.Background(), &owonmodel.AcquisitionPatch{Mode: &average}), "unsupported")
 	require.ErrorContains(t, controller.SetAcquisition(context.Background(), &owonmodel.AcquisitionPatch{AverageCount: &averageCount}), "unsupported")
 	require.ErrorContains(t, controller.SetMeasurement(context.Background(), &owonmodel.MeasurementPatch{ReplaceVisible: &replace}), "unsupported")
 	require.Error(t, controller.SetMeasurement(context.Background(), &owonmodel.MeasurementPatch{
@@ -208,7 +212,10 @@ func TestInstrumentRejectsUndocumentedControlCommands(t *testing.T) {
 func TestInstrumentDMMUsesDocumentedConfigurationForms(t *testing.T) {
 	t.Parallel()
 
-	backend := &scriptedBackend{}
+	backend := &scriptedBackend{Responses: map[string][]byte{
+		":DMM:CONFIGURE?":         []byte("RESISTANCE"),
+		":DMM:CONFIGURE:CURRENT?": []byte("AC"),
+	}}
 	controller := newTestInstrument(t, backend)
 	resistance := owonmodel.DMMFunctionResistance
 	current := owonmodel.DMMFunctionCurrent
@@ -220,9 +227,15 @@ func TestInstrumentDMMUsesDocumentedConfigurationForms(t *testing.T) {
 	require.NoError(t, controller.SetDMM(context.Background(), &owonmodel.DMMPatch{Function: &current, CurrentType: &currentType, Relative: &relative, Range: &rangeValue}))
 	require.Equal(t, []string{
 		":DMM:CONFIGURE RESISTANCE",
+		":DMM:CONFIGURE?",
+		":DMM:CONFIGURE?",
 		":DMM:CONFIGURE:CURRENT AC",
+		":DMM:CONFIGURE:CURRENT?",
+		":DMM:CONFIGURE:CURRENT?",
 		":DMM:REL ON",
 		":DMM:RANGE mV",
+		":DMM:CONFIGURE:CURRENT?",
+		":DMM:CONFIGURE:CURRENT?",
 	}, backend.Commands)
 }
 
@@ -265,8 +278,8 @@ func TestInstrumentValidatesDocumentedControlMatrices(t *testing.T) {
 	requireErrorType[*owonscpi.ErrInvalidSetting](t, controller.SetChannel(context.Background(), &owonmodel.ChannelPatch{Channel: owonmodel.Channel1, Scale: &brokenScale}))
 	requireErrorType[*owonscpi.ErrInvalidSetting](t, controller.SetHorizontal(context.Background(), &owonmodel.HorizontalPatch{Scale: &badHorizontal}))
 	requireErrorType[*owonscpi.ErrInvalidSetting](t, controller.SetGenerator(context.Background(), &owonmodel.GeneratorPatch{Waveform: &square, FrequencyHz: &overSquareMaximum}))
-	requireErrorType[*owonscpi.ErrInvalidSetting](t, controller.SetGenerator(context.Background(), &owonmodel.GeneratorPatch{SymmetryPercent: &badSymmetry}))
-	requireErrorType[*owonscpi.ErrInvalidSetting](t, controller.SetGenerator(context.Background(), &owonmodel.GeneratorPatch{DutyPercent: &badDuty}))
+	requireErrorType[*owonscpi.ErrInvalidSetting](t, controller.SetGenerator(context.Background(), &owonmodel.GeneratorPatch{Waveform: &square, SymmetryPercent: &badSymmetry}))
+	requireErrorType[*owonscpi.ErrInvalidSetting](t, controller.SetGenerator(context.Background(), &owonmodel.GeneratorPatch{Waveform: &square, DutyPercent: &badDuty}))
 	require.Equal(t, []string{":CH1:PROBE 10X", ":CH1:SCALE 100mV"}, backend.Commands)
 }
 
@@ -728,7 +741,8 @@ func TestInstrumentStateDecodesVerifiedHeaderControls(t *testing.T) {
 	t.Parallel()
 
 	backend := &scriptedBackend{Responses: map[string][]byte{
-		"*IDN?": []byte("OWON,HDS2202S,25061855,V2.6.0"),
+		"*IDN?":       []byte("OWON,HDS2202S,25061855,V2.6.0"),
+		":DMM:RANGE?": []byte("mV"),
 		":DATA:WAVE:SCREEN:HEAD?": []byte(`{
 			"TIMEBASE":{"SCALE":"20us","HOFFSET":0},
 			"SAMPLE":{"TYPE":"SAMPle","DEPMEM":"4K","DATALEN":600},
@@ -748,6 +762,49 @@ func TestInstrumentStateDecodesVerifiedHeaderControls(t *testing.T) {
 	require.Equal(t, owonmodel.TriggerSlopeRising, state.Trigger.Slope)
 	require.Equal(t, 1.52, state.Trigger.Level)
 	require.Equal(t, "TRIG", state.Trigger.Status)
+	require.NotNil(t, state.DMM)
+	require.Equal(t, owonmodel.DMMRangeMV, state.DMM.Range)
+	require.Equal(t, "mV", state.DMM.ObservedRangeToken)
+}
+
+// TestInstrumentStateKeepsUnknownDMMRangeUnavailable verifies a live dialect token cannot poison the whole snapshot.
+//
+// Example: a device-specific `10A` range reply yields an explicit unspecified DMM state and no fabricated enum.
+func TestInstrumentStateKeepsUnknownDMMRangeUnavailable(t *testing.T) {
+	t.Parallel()
+
+	backend := &scriptedBackend{Responses: map[string][]byte{
+		"*IDN?":                   []byte("OWON,HDS2202S,25061855,V2.6.0"),
+		":DATA:WAVE:SCREEN:HEAD?": []byte(`{"TIMEBASE":{"SCALE":"20us"},"SAMPLE":{"TYPE":"SAMPle"},"CHANNEL":[{"NAME":"CH1","DISPLAY":"ON","COUPLING":"DC","PROBE":"10X","SCALE":"1.00V"}],"Trig":{"Mode":"SINGLE","Type":"EDGE","Items":{"Channel":"CH1","Level":"1V","Edge":"RISE","Coupling":"DC","Sweep":"AUTO"}}}`),
+		":DMM:RANGE?":             []byte("10A"),
+	}}
+	state, err := newTestInstrument(t, backend).State(t.Context(), &owonmodel.StateRequest{IncludeControls: true})
+	require.NoError(t, err)
+	require.NotNil(t, state)
+	require.NotNil(t, state.DMM)
+	require.Equal(t, owonmodel.DMMRangeUnspecified, state.DMM.Range)
+	require.Equal(t, "10A", state.DMM.ObservedRangeToken)
+}
+
+// TestInstrumentStateKeepsControlsWhenDMMRangeQueryFails verifies an optional range readback cannot discard valid controls.
+//
+// Example: a range timeout leaves the header-derived controls available with an explicit unavailable DMM range.
+func TestInstrumentStateKeepsControlsWhenDMMRangeQueryFails(t *testing.T) {
+	t.Parallel()
+
+	backend := &scriptedBackend{
+		Responses: map[string][]byte{
+			"*IDN?":                   []byte("OWON,HDS2202S,25061855,V2.6.0"),
+			":DATA:WAVE:SCREEN:HEAD?": []byte(`{"TIMEBASE":{"SCALE":"20us"},"SAMPLE":{"TYPE":"SAMPle"},"CHANNEL":[{"NAME":"CH1","DISPLAY":"ON","COUPLING":"DC","PROBE":"10X","SCALE":"1.00V"}],"Trig":{"Mode":"SINGLE","Type":"EDGE","Items":{"Channel":"CH1","Level":"1V","Edge":"RISE","Coupling":"DC","Sweep":"AUTO"}}}`),
+		},
+		ExchangeErrors: []error{nil, nil, context.DeadlineExceeded},
+	}
+	state, err := newTestInstrument(t, backend).State(t.Context(), &owonmodel.StateRequest{IncludeControls: true})
+	require.NoError(t, err)
+	require.NotNil(t, state.Horizontal)
+	require.NotNil(t, state.DMM)
+	require.Equal(t, owonmodel.DMMRangeUnspecified, state.DMM.Range)
+	require.Empty(t, state.DMM.ObservedRangeToken)
 }
 
 // TestInstrumentStateSeparatesHeaderFetchFromExposure verifies both request flags independently.
@@ -785,6 +842,7 @@ func TestInstrumentStateSeparatesHeaderFetchFromExposure(t *testing.T) {
 				backend := &scriptedBackend{Responses: map[string][]byte{
 					"*IDN?":                   []byte("OWON,HDS2202S,25061855,V2.6.0"),
 					":DATA:WAVE:SCREEN:HEAD?": header,
+					":DMM:RANGE?":             []byte("mV"),
 				}}
 				controller := newTestInstrument(t, backend)
 				state, err := controller.State(context.Background(), &owonmodel.StateRequest{

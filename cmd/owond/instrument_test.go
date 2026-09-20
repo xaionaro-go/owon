@@ -172,6 +172,20 @@ func TestCompositionPublishesOnlyCompleteOwners(t *testing.T) {
 	require.Error(t, err)
 }
 
+// TestKeepAwakeStartupFailureCleansSession verifies policy failure before listener startup retains ownership cleanup.
+//
+// Example: a malformed timer response returns an error and the session closes exactly once.
+func TestKeepAwakeStartupFailureCleansSession(t *testing.T) {
+	backend := new(startupBackend)
+	service, session, err := composeService(t.Context(), backend, owonsession.Config{ExpectedSerial: "serial"}, owonserver.ServerConfig{})
+	require.NoError(t, err)
+	policyErr := service.EnsureKeepAwake(t.Context())
+	require.Error(t, policyErr)
+	require.Zero(t, backend.Closes.Load())
+	require.ErrorIs(t, rejectStartup(t.Context(), sessionCleanup{Session: session}, policyErr), policyErr)
+	require.EqualValues(t, 1, backend.Closes.Load())
+}
+
 // TestDaemonRejectsNilContextBeforeLogging keeps invalid calls from panicking or losing owners.
 //
 // Example: rejecting cleanup with a nil context leaves the valid session available to close.

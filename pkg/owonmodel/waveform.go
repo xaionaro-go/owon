@@ -36,14 +36,33 @@ type WaveformMetadata struct {
 	DataLengthBytes   uint64
 }
 
+// ScreenTrace describes vendor display coordinates, not calibrated ADC samples.
+// Coordinates start at the top left; each Y entry's index is its X coordinate.
+// Off-screen coordinates remain intact for the renderer to clip.
+//
+// Example: an HDS2202S screen has 600 by 200 coordinates over 12 by 8 divisions.
+type ScreenTrace struct {
+	Profile             string
+	Width               int
+	Height              int
+	HorizontalDivisions int
+	VerticalDivisions   int
+	Y                   []int
+	GroundY             int
+}
+
 // Waveform contains one channel capture, its raw header, and independently observed metadata.
 //
 // Example: Data retains the exact uninterpreted device bytes.
 type Waveform struct {
-	Channel          Channel
-	Data             []byte
-	Encoding         string
-	ScreenHeaderJSON []byte
-	CapturedAt       time.Time
-	Metadata         *WaveformMetadata
+	Channel                      Channel
+	Data                         []byte
+	Encoding                     string
+	ScreenHeaderJSON             []byte
+	CapturedAt                   time.Time
+	Metadata                     *WaveformMetadata
+	ScreenTrace                  *ScreenTrace
+	ScreenTraceUnavailableReason string
+	// CaptureStartedAt and CapturedAt bound host I/O, not device acquisition time.
+	CaptureStartedAt time.Time
 }

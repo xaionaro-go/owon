@@ -23,6 +23,8 @@ service OwonService {
   rpc Run(google.protobuf.Empty) returns (CommandResult);
   rpc Stop(google.protobuf.Empty) returns (CommandResult);
   rpc Single(google.protobuf.Empty) returns (CommandResult);
+  // Source-backed V2.5.1 `:AUToseton` candidate; no device response/readback is claimed.
+  rpc Auto(google.protobuf.Empty) returns (CommandResult);
   rpc GetWaveform(GetWaveformRequest) returns (Waveform);
   rpc Subscribe(SubscribeRequest) returns (stream Event);
 }
@@ -99,6 +101,14 @@ enum GeneratorWaveform {
   GENERATOR_WAVEFORM_SQUARE = 2;
   GENERATOR_WAVEFORM_RAMP = 3;
   GENERATOR_WAVEFORM_PULSE = 4;
+  GENERATOR_WAVEFORM_AMP_ALT = 5;
+  GENERATOR_WAVEFORM_ATT_ALT = 6;
+  GENERATOR_WAVEFORM_STAIR_DOWN = 7;
+  GENERATOR_WAVEFORM_STAIR_UP_DOWN = 8;
+  GENERATOR_WAVEFORM_STAIR_UP = 9;
+  GENERATOR_WAVEFORM_BESSEL_J = 10;
+  GENERATOR_WAVEFORM_BESSEL_Y = 11;
+  GENERATOR_WAVEFORM_SINC = 12;
 }
 
 enum DmmFunction {
@@ -115,6 +125,37 @@ enum GeneratorLoad {
   GENERATOR_LOAD_UNSPECIFIED = 0;
   GENERATOR_LOAD_ON = 1;
   GENERATOR_LOAD_OFF = 2;
+}
+
+enum GeneratorObservationStatus {
+  GENERATOR_OBSERVATION_UNSPECIFIED = 0;
+  GENERATOR_OBSERVATION_OBSERVED = 1;
+  GENERATOR_OBSERVATION_UNVERIFIED = 2;
+  GENERATOR_OBSERVATION_UNAVAILABLE = 3;
+  GENERATOR_OBSERVATION_MALFORMED = 4;
+  GENERATOR_OBSERVATION_UNKNOWN = 5;
+}
+
+enum GeneratorContextStatus {
+  GENERATOR_CONTEXT_UNSPECIFIED = 0;
+  GENERATOR_CONTEXT_MATCH = 1;
+  GENERATOR_CONTEXT_MISMATCH = 2;
+  GENERATOR_CONTEXT_UNKNOWN = 3;
+}
+
+enum GeneratorDeliveryStatus {
+  GENERATOR_DELIVERY_NOT_ATTEMPTED = 0;
+  GENERATOR_DELIVERY_TRANSPORT_COMPLETE_READBACK_VERIFIED = 1;
+  GENERATOR_DELIVERY_TRANSPORT_COMPLETE_READBACK_UNVERIFIED = 2;
+  GENERATOR_DELIVERY_PARTIAL_OR_UNKNOWN = 3;
+}
+
+enum GeneratorOutputCompensationStatus {
+  GENERATOR_OUTPUT_COMPENSATION_NOT_ATTEMPTED = 0;
+  GENERATOR_OUTPUT_COMPENSATION_NOT_REQUIRED = 1;
+  GENERATOR_OUTPUT_COMPENSATION_VERIFIED = 2;
+  GENERATOR_OUTPUT_COMPENSATION_UNVERIFIED = 3;
+  GENERATOR_OUTPUT_COMPENSATION_FAILED = 4;
 }
 
 enum DmmRange {
@@ -222,6 +263,7 @@ message GeneratorState {
   GeneratorWaveform waveform = 1;
   double frequency_hz = 2;
   double period_seconds = 3;
+  // Amplitude in volts peak-to-peak (Vpp).
   double amplitude_volts = 4;
   double offset_volts = 5;
   double high_volts = 6;
@@ -242,6 +284,7 @@ message DmmState {
   bool relative = 3;
   DmmRange range = 4;
   bool auto_range = 5;
+  string observed_range_token = 6;
 }
 
 message StateSnapshot {
@@ -255,7 +298,7 @@ message StateSnapshot {
   TriggerState trigger = 8;
   // Omitted until a complete generator query-to-state mapping is validated.
   GeneratorState generator = 9;
-  // Omitted because no verified generic HDS2202S DMM-state query is available.
+  // Only verified DMM range readback is populated; other dimensions remain unspecified.
   DmmState dmm = 10;
 }
 
@@ -269,7 +312,45 @@ message ExecuteResponse {
 }
 
 message CommandResult {
+  // Transport completion only; this timestamp is not device readback.
   google.protobuf.Timestamp applied_at = 1;
+  GeneratorOperationResult generator = 2;
+}
+
+message GeneratorWaveformContext {
+  optional GeneratorWaveform requested = 1;
+  optional GeneratorWaveform observed = 2;
+  string observed_token = 3;
+  GeneratorContextStatus match = 4;
+  string observed_raw = 5;
+  string reason = 6;
+}
+
+message GeneratorOutputObservation {
+  GeneratorObservationStatus status = 1;
+  optional bool value = 2;
+  string token = 3;
+  string raw = 4;
+  string reason = 5;
+}
+
+message GeneratorObservation {
+  google.protobuf.Timestamp captured_at = 1;
+  GeneratorWaveformContext context = 2;
+  GeneratorOutputObservation output = 3;
+}
+
+message GeneratorOutputCompensation {
+  optional bool requested = 1;
+  optional bool observed = 2;
+  GeneratorOutputCompensationStatus status = 3;
+}
+
+message GeneratorOperationResult {
+  GeneratorDeliveryStatus delivery = 1;
+  GeneratorObservation observation = 2;
+  repeated string completed_writes = 3;
+  GeneratorOutputCompensation compensation = 4;
 }
 
 message SetChannelRequest {
@@ -313,9 +394,14 @@ message SetMeasurementRequest {
 message SetGeneratorRequest {
   // Retained vendor/transcribed grammar, not physical SET proof; see docs/usb-protocol.md.
   // Duty/rise/fall interpretation remains uncertain. Execute permits explicitly framed raw queries.
+  // Required with frequency, period, symmetry, duty, width, rising or falling.
+  // The typed API does not support symmetry, duty, width, rising or falling for builtins.
+  // Their builtin interpretation has not been verified on the device.
   optional GeneratorWaveform waveform = 1;
+  // Frequency and period are mutually exclusive, even when reciprocal.
   optional double frequency_hz = 2;
   optional double period_seconds = 3;
+  // Amplitude in volts peak-to-peak (Vpp).
   optional double amplitude_volts = 4;
   optional double offset_volts = 5;
   optional double high_volts = 6;
@@ -327,6 +413,8 @@ message SetGeneratorRequest {
   optional double duty_percent = 12;
   optional GeneratorLoad load = 13;
   optional bool output = 14;
+  // WebUI and explicit clients may request the bounded observed result; omitted keeps legacy write-only semantics.
+  optional bool observe = 15;
 }
 
 message SetDmmRequest {
@@ -365,6 +453,18 @@ message WaveformMetadata {
   uint64 data_length_bytes = 8;
 }
 
+// Vendor display coordinates, not calibrated ADC samples. X is the Y array index.
+// Coordinates use a top-left origin; off-screen values are retained for clipping.
+message ScreenTrace {
+  string profile = 1;
+  uint32 width = 2;
+  uint32 height = 3;
+  uint32 horizontal_divisions = 4;
+  uint32 vertical_divisions = 5;
+  repeated sint32 y = 6;
+  sint32 ground_y = 7;
+}
+
 message Waveform {
   Channel channel = 1;
   bytes data = 2;
@@ -374,6 +474,10 @@ message Waveform {
   uint64 sequence = 5;
   google.protobuf.Timestamp captured_at = 6;
   WaveformMetadata metadata = 7;
+  ScreenTrace screen_trace = 8;
+  string screen_trace_unavailable_reason = 9;
+  // Host I/O start before HEAD, not a device acquisition timestamp.
+  google.protobuf.Timestamp capture_started_at = 10;
 }
 
 message SubscribeRequest {

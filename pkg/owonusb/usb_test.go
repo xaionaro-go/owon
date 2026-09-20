@@ -336,11 +336,8 @@ func TestUSBBackendClosesResourcesAfterIdentityFailure(t *testing.T) {
 
 	var order []string
 	release := usbReleaseRecorder{Order: &order}
-	session, err := newEndpointSession(
-		&endpointReader{Chunks: [][]byte{[]byte("OWON,HDS2202S,wrong,V2.6.0\n")}},
-		new(endpointWriter),
-		1024,
-	)
+	endpoint := cleanIdentityRecoveryEndpoint("OWON,HDS2202S,wrong,V2.6.0\n")
+	session, err := newEndpointSession(endpoint, endpoint, 1024)
 	require.NoError(t, err)
 	resources := &usbResources{
 		release:    release.Release,
@@ -377,11 +374,8 @@ func TestUSBBackendRetainsCandidateAfterIdentityCleanupFailure(t *testing.T) {
 		device:     device,
 		usbContext: &orderedUSBCloser{Name: "context", Order: &order},
 	}
-	session, err := newEndpointSession(
-		&endpointReader{Chunks: [][]byte{[]byte("OWON,HDS2202S,wrong,V2.6.0\n")}},
-		new(endpointWriter),
-		1024,
-	)
+	endpoint := cleanIdentityRecoveryEndpoint("OWON,HDS2202S,wrong,V2.6.0\n")
+	session, err := newEndpointSession(endpoint, endpoint, 1024)
 	require.NoError(t, err)
 	resources.session = session
 	opener := &scriptedUSBResourcesOpener{Resources: []*usbResources{resources}}
@@ -414,11 +408,8 @@ func TestUSBBackendRetainsFailedCleanupBeforeRecovery(t *testing.T) {
 		device:     device,
 		usbContext: &orderedUSBCloser{Name: "old-context", Order: &order},
 	}
-	newSession, err := newEndpointSession(
-		&endpointReader{Chunks: [][]byte{[]byte("OWON,HDS2202S,25061855,V2.6.0\n")}},
-		new(endpointWriter),
-		1024,
-	)
+	newEndpoint := cleanIdentityRecoveryEndpoint("OWON,HDS2202S,25061855,V2.6.0\n")
+	newSession, err := newEndpointSession(newEndpoint, newEndpoint, 1024)
 	require.NoError(t, err)
 	newResources := &usbResources{session: newSession}
 	opener := &scriptedUSBResourcesOpener{Resources: []*usbResources{newResources}}

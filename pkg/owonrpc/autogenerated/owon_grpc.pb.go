@@ -34,6 +34,7 @@ const (
 	OwonService_Run_FullMethodName               = "/xaionaro.owon.OwonService/Run"
 	OwonService_Stop_FullMethodName              = "/xaionaro.owon.OwonService/Stop"
 	OwonService_Single_FullMethodName            = "/xaionaro.owon.OwonService/Single"
+	OwonService_Auto_FullMethodName              = "/xaionaro.owon.OwonService/Auto"
 	OwonService_GetWaveform_FullMethodName       = "/xaionaro.owon.OwonService/GetWaveform"
 	OwonService_Subscribe_FullMethodName         = "/xaionaro.owon.OwonService/Subscribe"
 )
@@ -56,6 +57,8 @@ type OwonServiceClient interface {
 	Run(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CommandResult, error)
 	Stop(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CommandResult, error)
 	Single(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CommandResult, error)
+	// Source-backed V2.5.1 `:AUToseton` candidate; no device response/readback is claimed.
+	Auto(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CommandResult, error)
 	GetWaveform(ctx context.Context, in *GetWaveformRequest, opts ...grpc.CallOption) (*Waveform, error)
 	Subscribe(ctx context.Context, in *SubscribeRequest, opts ...grpc.CallOption) (grpc.ServerStreamingClient[Event], error)
 }
@@ -208,6 +211,16 @@ func (c *owonServiceClient) Single(ctx context.Context, in *emptypb.Empty, opts 
 	return out, nil
 }
 
+func (c *owonServiceClient) Auto(ctx context.Context, in *emptypb.Empty, opts ...grpc.CallOption) (*CommandResult, error) {
+	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
+	out := new(CommandResult)
+	err := c.cc.Invoke(ctx, OwonService_Auto_FullMethodName, in, out, cOpts...)
+	if err != nil {
+		return nil, err
+	}
+	return out, nil
+}
+
 func (c *owonServiceClient) GetWaveform(ctx context.Context, in *GetWaveformRequest, opts ...grpc.CallOption) (*Waveform, error) {
 	cOpts := append([]grpc.CallOption{grpc.StaticMethod()}, opts...)
 	out := new(Waveform)
@@ -255,6 +268,8 @@ type OwonServiceServer interface {
 	Run(context.Context, *emptypb.Empty) (*CommandResult, error)
 	Stop(context.Context, *emptypb.Empty) (*CommandResult, error)
 	Single(context.Context, *emptypb.Empty) (*CommandResult, error)
+	// Source-backed V2.5.1 `:AUToseton` candidate; no device response/readback is claimed.
+	Auto(context.Context, *emptypb.Empty) (*CommandResult, error)
 	GetWaveform(context.Context, *GetWaveformRequest) (*Waveform, error)
 	Subscribe(*SubscribeRequest, grpc.ServerStreamingServer[Event]) error
 	mustEmbedUnimplementedOwonServiceServer()
@@ -308,6 +323,9 @@ func (UnimplementedOwonServiceServer) Stop(context.Context, *emptypb.Empty) (*Co
 }
 func (UnimplementedOwonServiceServer) Single(context.Context, *emptypb.Empty) (*CommandResult, error) {
 	return nil, status.Error(codes.Unimplemented, "method Single not implemented")
+}
+func (UnimplementedOwonServiceServer) Auto(context.Context, *emptypb.Empty) (*CommandResult, error) {
+	return nil, status.Error(codes.Unimplemented, "method Auto not implemented")
 }
 func (UnimplementedOwonServiceServer) GetWaveform(context.Context, *GetWaveformRequest) (*Waveform, error) {
 	return nil, status.Error(codes.Unimplemented, "method GetWaveform not implemented")
@@ -588,6 +606,24 @@ func _OwonService_Single_Handler(srv interface{}, ctx context.Context, dec func(
 	return interceptor(ctx, in, info, handler)
 }
 
+func _OwonService_Auto_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
+	in := new(emptypb.Empty)
+	if err := dec(in); err != nil {
+		return nil, err
+	}
+	if interceptor == nil {
+		return srv.(OwonServiceServer).Auto(ctx, in)
+	}
+	info := &grpc.UnaryServerInfo{
+		Server:     srv,
+		FullMethod: OwonService_Auto_FullMethodName,
+	}
+	handler := func(ctx context.Context, req interface{}) (interface{}, error) {
+		return srv.(OwonServiceServer).Auto(ctx, req.(*emptypb.Empty))
+	}
+	return interceptor(ctx, in, info, handler)
+}
+
 func _OwonService_GetWaveform_Handler(srv interface{}, ctx context.Context, dec func(interface{}) error, interceptor grpc.UnaryServerInterceptor) (interface{}, error) {
 	in := new(GetWaveformRequest)
 	if err := dec(in); err != nil {
@@ -679,6 +715,10 @@ var OwonService_ServiceDesc = grpc.ServiceDesc{
 		{
 			MethodName: "Single",
 			Handler:    _OwonService_Single_Handler,
+		},
+		{
+			MethodName: "Auto",
+			Handler:    _OwonService_Auto_Handler,
 		},
 		{
 			MethodName: "GetWaveform",

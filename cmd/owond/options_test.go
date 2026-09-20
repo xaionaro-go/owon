@@ -149,7 +149,22 @@ func TestDaemonDefaultsMatchCorePolicy(t *testing.T) {
 	require.Equal(t, "/run/user/1234/owon/owond.sock", configuration.Endpoint.Address)
 	require.Equal(t, owonusb.DefaultModel, configuration.Model)
 	require.Equal(t, owonserver.DefaultMaximumActiveSubscriptions, configuration.MaximumSubscriptions)
+	require.True(t, configuration.KeepAwake)
 	require.Equal(t, logger.LevelInfo, configuration.LogLevel)
+}
+
+// TestDaemonKeepAwakeDefaultsEnabled verifies startup refresh is the default policy.
+//
+// Example: --no-keep-awake is the explicit opt-out from the startup refresh.
+func TestDaemonKeepAwakeDefaultsEnabled(t *testing.T) {
+	configuration, err := parseOptions(nil, io.Discard)
+	require.NoError(t, err)
+	require.True(t, configuration.KeepAwake)
+	configuration, err = parseOptions([]string{"--serial", "example", "--no-keep-awake"}, io.Discard)
+	require.NoError(t, err)
+	require.False(t, configuration.KeepAwake)
+	_, err = parseOptions([]string{"--serial", "example", "--keep-awake"}, io.Discard)
+	require.Error(t, err)
 }
 
 // TestDaemonEndpointOverrideIgnoresRuntimeEnvironment preserves explicit connection configuration.

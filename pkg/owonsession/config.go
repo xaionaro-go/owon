@@ -7,7 +7,8 @@ import (
 )
 
 const (
-	// DefaultDeviceOperationTimeout sets a cancellation deadline for each exchange or recovery phase.
+	// DefaultDeviceOperationTimeout sets a cancellation deadline for each exchange,
+	// recovery phase, or post-admission transaction operation context.
 	// This is application policy, not a native completion guarantee: ownership remains
 	// held until cooperative backend cancellation actually returns.
 	//
@@ -15,7 +16,8 @@ const (
 	DefaultDeviceOperationTimeout = 10 * time.Second
 )
 
-// Config identifies the instrument and sets a cooperative deadline per device operation.
+// Config identifies the instrument and sets a cooperative deadline per device
+// exchange, recovery phase, or post-admission transaction operation context.
 // Zero OperationTimeout selects the default; a negative value is invalid.
 //
 // Example: Config{ExpectedSerial: "25061855", OperationTimeout: time.Minute} allows slow captures.

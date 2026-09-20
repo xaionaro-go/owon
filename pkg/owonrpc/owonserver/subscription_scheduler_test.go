@@ -56,6 +56,8 @@ func TestSubscriptionPollWeightCountsVerifiedCommands(t *testing.T) {
 		WaveformChannels:    []pb.Channel{pb.Channel_CHANNEL_1, pb.Channel_CHANNEL_2},
 	}
 	require.Equal(t, 8, subscriptionPollWeight(request))
+	require.Equal(t, 2, subscriptionPollWeight(&pb.SubscribeRequest{IncludeScreenHeader: true}))
+	require.Equal(t, 3, subscriptionPollWeight(&pb.SubscribeRequest{IncludeControls: true}))
 	require.Equal(t, 1, subscriptionPollWeight(&pb.SubscribeRequest{}))
 	require.Equal(t, maximumSubscriptionPollWeight, subscriptionPollWeight(&pb.SubscribeRequest{
 		Measurements:        make([]*pb.MeasurementSelector, owonmodel.MaximumMeasurementSelectors),

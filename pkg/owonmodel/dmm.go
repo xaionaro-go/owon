@@ -84,6 +84,15 @@ type DMMRange int32
 // Example: DMMCurrentTypeAC selects the corresponding documented setting.
 type DMMCurrentType int32
 
+// DMMFunctionSelection is one function query's semantic context and result.
+// For voltage/current queries, Function identifies the query dimension and CurrentType is the observed AC/DC reply; that reply does not independently prove the active function.
+//
+// Example: a current query returning DC is represented by DMMFunctionCurrent with CurrentType pointing to DMMCurrentTypeDC.
+type DMMFunctionSelection struct {
+	Function    DMMFunction
+	CurrentType *DMMCurrentType
+}
+
 // DMMPatch holds optional control writes; nil fields leave their settings unchanged.
 //
 // Example: a present false Relative value disables relative mode without changing the selected function.
@@ -132,15 +141,16 @@ func (request *DMMPatch) Validate() error {
 	return nil
 }
 
-// DMMState contains the multimeter function, range, and relative-mode settings.
+// DMMState contains the multimeter function, range, relative-mode settings, and raw range readback.
 //
-// Example: DC voltage with automatic ranging is distinct from AC current.
+// Example: an unknown device range keeps its raw token while Range remains DMMRangeUnspecified.
 type DMMState struct {
-	Function    DMMFunction
-	CurrentType DMMCurrentType
-	Relative    bool
-	Range       DMMRange
-	AutoRange   bool
+	Function           DMMFunction
+	CurrentType        DMMCurrentType
+	Relative           bool
+	Range              DMMRange
+	AutoRange          bool
+	ObservedRangeToken string
 }
 
 // DMMMeasurement contains one multimeter reading and its capture time.

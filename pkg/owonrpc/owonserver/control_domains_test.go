@@ -58,10 +58,10 @@ func TestDmmPreflightMatchesExecution(t *testing.T) {
 		{`{"relative":true,"range":"DMM_RANGE_UNSPECIFIED"}`, nil},
 		{`{"function":999}`, nil},
 		{`{"function":"DMM_FUNCTION_CURRENT","currentType":999}`, nil},
-		{`{"function":"DMM_FUNCTION_VOLTAGE","currentType":"DMM_CURRENT_TYPE_DC","relative":false,"range":"DMM_RANGE_MV","autoRange":true}`, []string{":DMM:CONFIGURE:VOLTAGE DC", ":DMM:REL OFF", ":DMM:RANGE mV", ":DMM:AUTO ON"}},
+		{`{"function":"DMM_FUNCTION_VOLTAGE","currentType":"DMM_CURRENT_TYPE_DC","relative":false,"range":"DMM_RANGE_MV","autoRange":true}`, []string{":DMM:CONFIGURE:VOLTAGE DC", ":DMM:CONFIGURE:VOLTAGE?", ":DMM:CONFIGURE:VOLTAGE?", ":DMM:REL OFF", ":DMM:RANGE mV", ":DMM:AUTO ON", ":DMM:CONFIGURE:VOLTAGE?", ":DMM:CONFIGURE:VOLTAGE?"}},
 		{`{"range":"DMM_RANGE_ON"}`, []string{":DMM:RANGE ON"}},
 		{`{"range":"DMM_RANGE_V"}`, []string{":DMM:RANGE V"}},
-		{`{"function":"DMM_FUNCTION_RESISTANCE"}`, []string{":DMM:CONFIGURE RESISTANCE"}},
+		{`{"function":"DMM_FUNCTION_RESISTANCE"}`, []string{":DMM:CONFIGURE RESISTANCE", ":DMM:CONFIGURE?", ":DMM:CONFIGURE?"}},
 	} {
 		var request pb.SetDmmRequest
 		require.NoError(t, protojson.Unmarshal([]byte(testCase.JSON), &request))
@@ -69,6 +69,15 @@ func TestDmmPreflightMatchesExecution(t *testing.T) {
 		_, validationErr := owonscpi.CompileDMM(owonrpc.DMMPatchFromProto(&request))
 		require.True(t, proto.Equal(before, &request), "pure validation mutated %s", testCase.JSON)
 		backend := &scriptedBackend{}
+		if request.Function != nil {
+			backend.Responses = map[string][]byte{}
+			switch *request.Function {
+			case pb.DmmFunction_DMM_FUNCTION_VOLTAGE:
+				backend.Responses[":DMM:CONFIGURE:VOLTAGE?"] = []byte("DC")
+			case pb.DmmFunction_DMM_FUNCTION_RESISTANCE:
+				backend.Responses[":DMM:CONFIGURE?"] = []byte("RESISTANCE")
+			}
+		}
 		executionErr := newTestInstrument(t, backend).SetDMM(t.Context(), owonrpc.DMMPatchFromProto(&request))
 		if testCase.Commands == nil {
 			require.Error(t, validationErr, testCase.JSON)
@@ -84,6 +93,25 @@ func TestDmmPreflightMatchesExecution(t *testing.T) {
 	requireErrorType[*owonmodel.ErrInvalidRequest](t, err)
 }
 
+// TestDMMMalformedGenericCurrentTypeMapsToDataLoss verifies malformed
+// readback remains a protocol failure across the real RPC path.
+//
+// Example: a generic resistance query returning AC stops before REL and maps
+// to DataLoss after exactly one function observation.
+func TestDMMMalformedGenericCurrentTypeMapsToDataLoss(t *testing.T) {
+	backend := &scriptedBackend{Responses: map[string][]byte{
+		":DMM:CONFIGURE?": []byte("AC"),
+	}}
+	function := pb.DmmFunction_DMM_FUNCTION_RESISTANCE
+	relative := true
+	_, err := newUnixControlClient(t, backend).SetDMM(t.Context(), &pb.SetDmmRequest{
+		Function: &function,
+		Relative: &relative,
+	})
+	require.Equal(t, codes.DataLoss, status.Code(err))
+	require.Equal(t, []string{":DMM:CONFIGURE RESISTANCE", ":DMM:CONFIGURE?"}, backend.Commands)
+}
+
 // TestControlDomainsThroughRPC verifies optional write domains across production serialization and handlers.
 //
 // Example: zero symmetry emits an integer while an invalid trailing load prevents every command in its patch.
@@ -91,16 +119,18 @@ func TestControlDomainsThroughRPC(t *testing.T) {
 	for _, testCase := range []struct {
 		JSON     string
 		Commands []string
+		Reason   string
 	}{
-		{`{"symmetryPercent":0}`, []string{":FUNCTION:SYMMETRY 0"}},
-		{`{"symmetryPercent":100}`, []string{":FUNCTION:SYMMETRY 100"}},
-		{`{"symmetryPercent":-1}`, nil},
-		{`{"symmetryPercent":101}`, nil},
-		{`{"symmetryPercent":50,"load":999}`, nil},
-		{`{"symmetryPercent":50,"load":"GENERATOR_LOAD_UNSPECIFIED"}`, nil},
-		{`{"load":"GENERATOR_LOAD_ON"}`, []string{":FUNCTION:LOAD ON"}},
-		{`{"load":"GENERATOR_LOAD_OFF"}`, []string{":FUNCTION:LOAD OFF"}},
-		{`{"dutyPercent":12.5,"offsetVolts":-0.25,"output":false}`, []string{":FUNCTION:OFFSET -0.25", ":FUNCTION:DTYCYCLE 12.5", ":CHANNEL OFF"}},
+		{`{"waveform":"GENERATOR_WAVEFORM_RAMP","symmetryPercent":0}`, []string{":FUNCTION RAMP", ":FUNCTION:SYMMETRY 0"}, ""},
+		{`{"waveform":"GENERATOR_WAVEFORM_RAMP","symmetryPercent":100}`, []string{":FUNCTION RAMP", ":FUNCTION:SYMMETRY 100"}, ""},
+		{`{"waveform":"GENERATOR_WAVEFORM_RAMP","symmetryPercent":-1}`, nil, "symmetry is outside the supported range"},
+		{`{"waveform":"GENERATOR_WAVEFORM_RAMP","symmetryPercent":101}`, nil, "symmetry is outside the supported range"},
+		{`{"symmetryPercent":50}`, nil, "waveform is required when setting symmetry"},
+		{`{"symmetryPercent":50,"load":999}`, nil, "unknown generator load 999"},
+		{`{"symmetryPercent":50,"load":"GENERATOR_LOAD_UNSPECIFIED"}`, nil, "unknown generator load 0"},
+		{`{"load":"GENERATOR_LOAD_ON"}`, []string{":FUNCTION:LOAD ON"}, ""},
+		{`{"load":"GENERATOR_LOAD_OFF"}`, []string{":FUNCTION:LOAD OFF"}, ""},
+		{`{"waveform":"GENERATOR_WAVEFORM_PULSE","dutyPercent":12.5,"offsetVolts":-0.25,"output":false}`, []string{":FUNCTION PULSE", ":FUNCTION:OFFSET -0.25", ":FUNCTION:DTYCYCLE 12.5", ":CHANNEL OFF"}, ""},
 	} {
 		backend := &scriptedBackend{}
 		client := newUnixControlClient(t, backend)
@@ -110,6 +140,7 @@ func TestControlDomainsThroughRPC(t *testing.T) {
 		if testCase.Commands == nil {
 			require.Nil(t, result)
 			require.Equal(t, codes.InvalidArgument, status.Code(err), testCase.JSON)
+			require.ErrorContains(t, err, testCase.Reason, testCase.JSON)
 			require.Empty(t, backend.Commands)
 			continue
 		}

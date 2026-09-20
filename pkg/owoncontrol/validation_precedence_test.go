@@ -37,7 +37,6 @@ func TestIntrinsicValidationPrecedesDialectSupport(t *testing.T) {
 	}
 	require.Empty(t, backend.Commands)
 	for _, err := range []error{
-		controller.SetAcquisition(t.Context(), &owonmodel.AcquisitionPatch{Mode: &average}),
 		controller.SetTrigger(t.Context(), &owonmodel.TriggerPatch{Source: &external}),
 		controller.SetDMM(t.Context(), &owonmodel.DMMPatch{AutoRange: &manual}),
 		controller.SetMeasurement(t.Context(), &owonmodel.MeasurementPatch{ReplaceVisible: &yes}),

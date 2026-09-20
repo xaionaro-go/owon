@@ -24,12 +24,13 @@ func TestDomainValidityExcludesDialectPolicy(t *testing.T) {
 	probe, scale, frequency := 3.0, "3us", 1e9
 	average, external, ground := AcquisitionModeAverage, TriggerSourceExternal, CouplingGround
 	manual, symmetry, replacement := false, int32(101), true
+	waveform := GeneratorWaveformSine
 	for _, request := range []validatable{
 		&ChannelPatch{Channel: Channel1, ProbeAttenuation: &probe},
 		&AcquisitionPatch{Mode: &average},
 		&HorizontalPatch{Scale: &scale},
 		&TriggerPatch{Source: &external, Coupling: &ground},
-		&GeneratorPatch{FrequencyHz: &frequency, SymmetryPercent: &symmetry},
+		&GeneratorPatch{Waveform: &waveform, FrequencyHz: &frequency, SymmetryPercent: &symmetry},
 		&DMMPatch{AutoRange: &manual},
 		&MeasurementPatch{ReplaceVisible: &replacement},
 		&WaveformRequest{Channel: Channel2},

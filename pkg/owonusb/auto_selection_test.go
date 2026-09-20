@@ -67,7 +67,7 @@ func TestAutomaticUSBOpenReachesDiscovery(t *testing.T) {
 // Example: the sole USB descriptor cannot authorize a different instrument's SCPI serial.
 func TestAutomaticUSBOpenValidatesDescriptorIdentity(t *testing.T) {
 	for _, identity := range []string{"OWON,HDS2202S,scope,1.0", "OWON,HDS2202S,other,1.0", "OTHER,HDS2202S,scope,1.0", "OWON,OTHER,scope,1.0"} {
-		endpoint := &timedBulkEndpoint{ReadChunks: [][]byte{[]byte(identity + "\n")}}
+		endpoint := &timedBulkEndpoint{ReadChunks: [][]byte{[]byte(identity + "\n")}, QuietProbe: true}
 		session, err := newEndpointSession(endpoint, endpoint, 1024)
 		require.NoError(t, err)
 		opener := &selectingUSBResourcesOpener{
@@ -103,7 +103,7 @@ func TestAutomaticUSBRecoveryPinsSelectedSerial(t *testing.T) {
 		//
 		// Example: a timed-out read is followed by explicit-serial recovery, not another automatic choice.
 		func(t *testing.T) {
-			first := &timedBulkEndpoint{ReadChunks: [][]byte{[]byte("OWON,HDS2202S,scope,1.0\n")}}
+			first := &timedBulkEndpoint{ReadChunks: [][]byte{[]byte("OWON,HDS2202S,scope,1.0\n")}, QuietProbe: true}
 			firstSession, err := newEndpointSession(first, first, 1024)
 			require.NoError(t, err)
 			opener := &selectingUSBResourcesOpener{
@@ -133,7 +133,7 @@ func TestAutomaticUSBRecoveryPinsSelectedSerial(t *testing.T) {
 				{Descriptor: "scope", Identity: "replacement", Writes: "*IDN?\n"},
 				{Descriptor: "scope", Identity: "scope", Writes: "*IDN?\nNEXT\n"},
 			} {
-				endpoint := &timedBulkEndpoint{ReadChunks: [][]byte{[]byte("OWON,HDS2202S," + candidate.Identity + ",1.0\n"), []byte("ready\n")}}
+				endpoint := &timedBulkEndpoint{ReadChunks: [][]byte{[]byte("OWON,HDS2202S," + candidate.Identity + ",1.0\n"), []byte("ready\n")}, QuietProbe: true}
 				session, err := newEndpointSession(endpoint, endpoint, 1024)
 				require.NoError(t, err)
 				opener.Descriptors = []usbSerialDescriptor{fakeUSBSerialDescriptor{Serial: candidate.Descriptor}}

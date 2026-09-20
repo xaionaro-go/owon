@@ -91,7 +91,7 @@ func TestInstrumentStopsSnapshotAtFirstFailure(t *testing.T) {
 	t.Parallel()
 	cause := errors.New("USB failed")
 	for _, header := range []string{"bad JSON", `{"SAMPLE":{"TYPE":"bad"}}`} {
-		backend := &scriptedBackend{Responses: map[string][]byte{"*IDN?": []byte("OWON,HDS2202S,serial,firmware"), ":DATA:WAVE:SCREEN:HEAD?": []byte(header)}}
+		backend := &scriptedBackend{Responses: map[string][]byte{"*IDN?": []byte("OWON,HDS2202S,serial,firmware"), ":DATA:WAVE:SCREEN:HEAD?": []byte(header), ":DMM:RANGE?": []byte("mV")}}
 		state, err := newTestInstrument(t, backend).State(t.Context(), &owonmodel.StateRequest{IncludeControls: true})
 		require.Nil(t, state)
 		requireErrorType[*owonscpi.ErrMalformedResponse](t, err)

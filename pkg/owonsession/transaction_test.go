@@ -416,3 +416,69 @@ func TestTransactionClosedAndUnconstructedValuesRejectIO(t *testing.T) {
 	require.Equal(t, []string{"B"}, backend.Commands())
 	require.NoError(t, session.Close())
 }
+
+// TestTransactionOperationContextUsesConfiguredBudgetAfterAdmission verifies
+// the child deadline starts only after Begin succeeds and never extends a
+// caller deadline.
+//
+// Example: a five-second caller receives a two-second session budget, while a
+// one-second caller retains its earlier deadline.
+func TestTransactionOperationContextUsesConfiguredBudgetAfterAdmission(t *testing.T) {
+	synctest.Test(t,
+		// verifyOperationContextDeadlines compares the configured and parent
+		// deadline boundaries without real-time waiting.
+		//
+		// Example: OperationContext performs no backend exchange or admission.
+		func(t *testing.T) {
+			backend := new(transactionBackend)
+			session, err := New(backend, Config{ExpectedSerial: "serial", OperationTimeout: 2 * time.Second})
+			require.NoError(t, err)
+			transaction, err := session.Begin(context.Background())
+			require.NoError(t, err)
+			defer transaction.Close()
+
+			start := time.Now()
+			parent, parentCancel := context.WithTimeout(context.Background(), 5*time.Second)
+			defer parentCancel()
+			operationContext, cancel, err := transaction.OperationContext(parent)
+			require.NoError(t, err)
+			defer cancel()
+			deadline, ok := operationContext.Deadline()
+			require.True(t, ok)
+			require.Equal(t, start.Add(2*time.Second), deadline)
+			require.NoError(t, operationContext.Err())
+			require.Empty(t, backend.Commands)
+
+			shortParent, shortCancel := context.WithTimeout(context.Background(), time.Second)
+			defer shortCancel()
+			shortContext, shortOperationCancel, err := transaction.OperationContext(shortParent)
+			require.NoError(t, err)
+			defer shortOperationCancel()
+			shortDeadline, ok := shortContext.Deadline()
+			require.True(t, ok)
+			require.Equal(t, start.Add(time.Second), shortDeadline)
+		})
+}
+
+// TestTransactionOperationContextRejectsUnavailableInputs keeps the narrow
+// context API fail-closed after ownership ends.
+//
+// Example: nil, zero, nil-parent, and closed transactions return typed
+// session-unavailable errors rather than panicking or admitting I/O.
+func TestTransactionOperationContextRejectsUnavailableInputs(t *testing.T) {
+	for _, transaction := range []*Transaction{nil, {}} {
+		_, _, err := transaction.OperationContext(context.Background())
+		requireErrorType[*ErrUnavailable](t, err)
+	}
+	backend := new(transactionBackend)
+	session, err := New(backend, Config{ExpectedSerial: "serial"})
+	require.NoError(t, err)
+	transaction, err := session.Begin(context.Background())
+	require.NoError(t, err)
+	_, _, err = transaction.OperationContext(nil)
+	requireErrorType[*ErrUnavailable](t, err)
+	transaction.Close()
+	_, _, err = transaction.OperationContext(context.Background())
+	requireErrorType[*ErrUnavailable](t, err)
+	require.Empty(t, backend.Commands)
+}

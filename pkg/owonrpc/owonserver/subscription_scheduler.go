@@ -26,7 +26,7 @@ const (
 	// maximumSubscriptionPollWeight is the largest validated subscription poll.
 	//
 	// Example: all measurements, one state header, and two waveform captures fit in one window.
-	maximumSubscriptionPollWeight = 1 + owonmodel.MaximumMeasurementSelectors + 1 + 2*owonrpc.MaximumSubscriptionWaveformChannels
+	maximumSubscriptionPollWeight = 1 + owonmodel.MaximumMeasurementSelectors + 2 + 2*owonrpc.MaximumSubscriptionWaveformChannels
 )
 
 // subscriptionPollScheduler admits weighted polling work in FIFO order at a fixed rate.

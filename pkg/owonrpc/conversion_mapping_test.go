@@ -330,6 +330,7 @@ func TestEveryResultFieldHasItsOwnMapping(t *testing.T) {
 		Encoding:         "raw",
 		ScreenHeaderJson: []byte{2, 3},
 		CapturedAt:       timestamppb.New(instant),
+		CaptureStartedAt: timestamppb.New(instant.Add(-time.Second)),
 
 		Metadata: &pb.WaveformMetadata{
 			SampleCount:       conversionPointer(uint64(99)),
@@ -347,6 +348,7 @@ func TestEveryResultFieldHasItsOwnMapping(t *testing.T) {
 		Encoding:         "raw",
 		ScreenHeaderJSON: []byte{2, 3},
 		CapturedAt:       instant,
+		CaptureStartedAt: instant.Add(-time.Second),
 
 		Metadata: &owonmodel.WaveformMetadata{
 			SampleCount:       conversionPointer(uint64(99)),

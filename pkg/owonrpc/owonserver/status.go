@@ -45,10 +45,13 @@ func rpcError(
 	var malformedResponse *owonprotocol.ErrMalformedResponse
 	var responseTooLarge *owonprotocol.ErrResponseTooLarge
 	var surplusResponse *owonprotocol.ErrSurplusResponse
+	var generatorNonconvergence *owonmodel.ErrGeneratorObservationNonconvergence
 	// Device decoding can reuse request validators; the enclosing protocol failure owns the classification.
 	switch {
 	case errors.As(err, &malformedResponse), errors.As(err, &responseTooLarge), errors.As(err, &surplusResponse), errors.As(err, &dialectMalformed), errors.As(err, &waveformTooLarge):
 		return status.Error(codes.DataLoss, operation+": "+err.Error())
+	case errors.As(err, &generatorNonconvergence):
+		return status.Error(codes.FailedPrecondition, operation+": "+err.Error())
 	case errors.As(err, &invalidCommand):
 		return status.Error(codes.InvalidArgument, operation+": "+err.Error())
 	case errors.As(err, &invalidRequest), errors.As(err, &invalidSetting), errors.As(err, &invalidInput), errors.As(err, &rpcInvalidInput), errors.As(err, &invalidConfig):
@@ -60,4 +63,23 @@ func rpcError(
 	default:
 		return status.Error(codes.Unavailable, operation+": "+err.Error())
 	}
+}
+
+// generatorRPCError preserves a typed partial generator result as a gRPC status detail.
+//
+// Example: an ambiguous CHANNEL write remains Unavailable while callers can inspect completed writes and compensation status.
+func generatorRPCError(
+	operation string,
+	err error,
+	result *owonmodel.GeneratorOperationResult,
+) error {
+	base := rpcError(operation, err)
+	if base == nil || result == nil {
+		return base
+	}
+	detailed, detailErr := status.Convert(base).WithDetails(owonrpc.GeneratorOperationResultToProto(result))
+	if detailErr != nil {
+		return base
+	}
+	return detailed.Err()
 }

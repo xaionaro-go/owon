@@ -252,6 +252,11 @@ func (backend *Backend) replaceAndValidate(ctx context.Context) (_err error) {
 	if resources.serial == "" || (backend.config.Serial != "" && resources.serial != backend.config.Serial) {
 		return backend.rejectResources(ctx, resources, &ErrUnavailable{Operation: "validate USB serial", Resource: "descriptor", Reason: fmt.Sprintf("serial %q does not match selection %q", resources.serial, backend.config.Serial)})
 	}
+	report, err := resources.session.drainPending(ctx)
+	if err != nil {
+		return backend.rejectResources(ctx, resources, fmt.Errorf("drain stale OWON USB response: %w", err))
+	}
+	logger.Debugf(ctx, "drained %d stale USB response bytes in %d reads", report.DiscardedBytes, report.ReadCalls)
 	identity, err := resources.session.Exchange(ctx, owonscpi.IdentityQuery())
 	if err != nil {
 		return backend.rejectResources(ctx, resources, fmt.Errorf("validate OWON SCPI identity: %w", err))

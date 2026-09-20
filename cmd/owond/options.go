@@ -29,6 +29,7 @@ type options struct {
 	ClientFingerprints   []string
 	MaximumSubscriptions int
 	DeviceTimeout        time.Duration
+	KeepAwake            bool
 	LogLevel             logger.Level
 }
 
@@ -37,6 +38,7 @@ type options struct {
 // Example: Cobra validates configuration before Execute acquires an instrument.
 type daemonCommand struct {
 	Config             options
+	NoKeepAwake        bool
 	Listen             string
 	Serial             string
 	ClientSANs         string
@@ -69,6 +71,7 @@ func (handler *daemonCommand) Command() *cobra.Command {
 	flags.StringVar(&handler.ClientFingerprints, "tls-client-sha256", "", "comma-separated allowed client certificate SHA-256 fingerprints")
 	flags.IntVar(&handler.Config.MaximumSubscriptions, "max-subscriptions", owonserver.DefaultMaximumActiveSubscriptions, fmt.Sprintf("maximum concurrent Subscribe streams (1-%d)", owonserver.MaximumActiveSubscriptions))
 	flags.DurationVar(&handler.Config.DeviceTimeout, "device-timeout", owonsession.DefaultDeviceOperationTimeout, "positive timeout for each device exchange or recovery phase")
+	flags.BoolVar(&handler.NoKeepAwake, "no-keep-awake", false, "do not refresh the instrument shutdown timer during startup")
 	handler.Config.LogLevel = logger.LevelInfo
 	flags.Var(&handler.Config.LogLevel, "log-level", "logging level: trace, debug, info, warning, error, fatal")
 
@@ -107,6 +110,7 @@ func (handler *daemonCommand) Validate(
 	_ []string,
 ) error {
 	config := &handler.Config
+	config.KeepAwake = !handler.NoKeepAwake
 	config.Serial = owonmodel.SerialNumber(strings.TrimSpace(handler.Serial))
 	config.Model = strings.TrimSpace(config.Model)
 	if config.Model == "" {

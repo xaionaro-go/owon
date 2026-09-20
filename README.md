@@ -2,30 +2,29 @@
 
 Control an **OWON HDS2202S** over USB from your browser, CLI, or gRPC.
 
-![OWON WebUI showing live measurements and channel controls](docs/screenshots/webui-desktop.png)
+![OWON WebUI screen traces: saved CH1 replay and synthetic CH2 copy](docs/screenshots/webui-desktop.png)
 
-*Actual WebUI with a simulated instrument backend. Measurements are demo data.*
+*Actual built WebUI replaying saved CH1 bytes through the controller, RPC and HTTP stream. CH2 is a synthetic copy; no live device is connected.*
 
 ## Quick start (Linux)
 
-Install Go 1.26+. On Debian/Ubuntu, install dependencies and build:
+Install Go 1.26+. On Debian/Ubuntu, install dependencies:
 
 ```sh
 sudo apt install git build-essential pkg-config libusb-1.0-0-dev usbutils
 git clone https://github.com/xaionaro-go/owon.git
 cd owon
-CGO_ENABLED=1 go build -o bin/ ./cmd/...
 ```
 
 Plug in your instrument and [grant USB access](docs/setup.md#usb-access).
 Run these in separate terminals from the checkout:
 
 ```sh
-./bin/owond
+go run ./cmd/owond
 ```
 
 ```sh
-./bin/owonweb
+go run ./cmd/owonweb
 ```
 
 Open **<http://127.0.0.1:8080/>**. Stop both processes with Ctrl+C when finished.
@@ -34,10 +33,10 @@ The daemon and clients share a private per-user Unix socket; no socket setup or 
 For CLI access while the daemon runs:
 
 ```sh
-./bin/owonctl info
+go run ./cmd/owonctl info
 ```
 
-Waveform captures contain raw bytes, not a decoded plot. Other models and firmware may differ.
+The WebUI automatically displays both channels using vendor screen coordinates for the supported HDS2202S screen profile. These traces are not calibrated samples or synchronized captures. Raw bytes and headers remain available; other profiles show an explicit unavailable reason. Other models and firmware may differ.
 
 - [USB access, troubleshooting, and systemd setup](docs/setup.md)
 - [CLI, API, remote connections, and device limitations](docs/reference.md)
@@ -47,9 +46,9 @@ Waveform captures contain raw bytes, not a decoded plot. Other models and firmwa
 <details>
 <summary>WebUI at phone width</summary>
 
-<img src="docs/screenshots/webui-mobile.png" alt="OWON WebUI at 390 pixels wide, showing the live device status and measurements" width="390">
+<img src="docs/screenshots/webui-mobile.png" alt="OWON WebUI at 390 pixels wide: saved CH1 replay and synthetic CH2 screen traces" width="390">
 
-Actual WebUI with the same simulated instrument backend; demo measurements.
+Actual built WebUI with the same saved-CH1 replay and synthetic CH2 copy; not live-device acquisition.
 
 </details>
 

@@ -128,6 +128,11 @@ func (handler *daemonCommand) Execute(
 	if err != nil {
 		return err
 	}
+	if config.KeepAwake {
+		if err := service.EnsureKeepAwake(ctx); err != nil {
+			return rejectStartup(ctx, sessionCleanup{Session: session}, fmt.Errorf("enable keep-awake policy: %w", err))
+		}
+	}
 	rpcLogging, err := owonserver.NewRPCLogging(logConfig, handler.LogOutput, config.Serial)
 	if err != nil {
 		return rejectStartup(ctx, sessionCleanup{Session: session}, err)

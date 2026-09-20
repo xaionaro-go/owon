@@ -87,7 +87,16 @@ func TestControlValidationRejectsMalformedPatches(t *testing.T) {
 // Example: capacitance and diode select their documented DMM functions without guessed current-type tokens.
 func TestAdditionalVerifiedControlTokens(t *testing.T) {
 	t.Parallel()
-	backend := &scriptedBackend{}
+	backend := &dmmSequenceBackend{Responses: map[string][][]byte{
+		":DMM:CONFIGURE?": {
+			[]byte("CAPACITANCE"),
+			[]byte("CAPACITANCE"),
+			[]byte("DIODE"),
+			[]byte("DIODE"),
+			[]byte("CONTINUITY"),
+			[]byte("CONTINUITY"),
+		},
+	}}
 	controller := newTestInstrument(t, backend)
 	for _, function := range []owonmodel.DMMFunction{owonmodel.DMMFunctionCapacitance, owonmodel.DMMFunctionDiode, owonmodel.DMMFunctionContinuity} {
 		require.NoError(t, controller.SetDMM(t.Context(), &owonmodel.DMMPatch{Function: &function}))
@@ -99,7 +108,8 @@ func TestAdditionalVerifiedControlTokens(t *testing.T) {
 		require.NoError(t, controller.SetGenerator(t.Context(), &owonmodel.GeneratorPatch{Waveform: &waveform}))
 	}
 	load, symmetry, duty := owonmodel.GeneratorLoadOff, int32(50), 100.0
-	require.NoError(t, controller.SetGenerator(t.Context(), &owonmodel.GeneratorPatch{Load: &load, SymmetryPercent: &symmetry, DutyPercent: &duty}))
+	waveform := owonmodel.GeneratorWaveformPulse
+	require.NoError(t, controller.SetGenerator(t.Context(), &owonmodel.GeneratorPatch{Waveform: &waveform, Load: &load, SymmetryPercent: &symmetry, DutyPercent: &duty}))
 	for _, coupling := range []owonmodel.Coupling{owonmodel.CouplingDC, owonmodel.CouplingGround} {
 		require.NoError(t, controller.SetChannel(t.Context(), &owonmodel.ChannelPatch{Channel: owonmodel.Channel1, Coupling: &coupling}))
 	}
@@ -109,7 +119,7 @@ func TestAdditionalVerifiedControlTokens(t *testing.T) {
 	coupling, depth := owonmodel.CouplingDC, owonmodel.AcquisitionMemoryDepth8K
 	require.NoError(t, controller.SetTrigger(t.Context(), &owonmodel.TriggerPatch{Coupling: &coupling}))
 	require.NoError(t, controller.SetAcquisition(t.Context(), &owonmodel.AcquisitionPatch{MemoryDepth: &depth}))
-	require.Equal(t, []string{":DMM:CONFIGURE CAPACITANCE", ":DMM:CONFIGURE DIODE", ":DMM:CONFIGURE CONTINUITY", ":DMM:RANGE ON", ":DMM:RANGE V", ":FUNCTION SQUARE", ":FUNCTION RAMP", ":FUNCTION PULSE", ":FUNCTION:SYMMETRY 50", ":FUNCTION:DTYCYCLE 100", ":FUNCTION:LOAD OFF", ":CH1:COUPLING DC", ":CH1:COUPLING GND", ":TRIGGER:SINGLE:SWEEP AUTO", ":TRIGGER:SINGLE:SWEEP SINGLE", ":TRIGGER:SINGLE:COUPLING DC", ":ACQUIRE:DEPMEM 8K"}, backend.Commands)
+	require.Equal(t, []string{":DMM:CONFIGURE CAPACITANCE", ":DMM:CONFIGURE?", ":DMM:CONFIGURE?", ":DMM:CONFIGURE DIODE", ":DMM:CONFIGURE?", ":DMM:CONFIGURE?", ":DMM:CONFIGURE CONTINUITY", ":DMM:CONFIGURE?", ":DMM:CONFIGURE?", ":DMM:RANGE ON", ":DMM:RANGE V", ":FUNCTION SQUARE", ":FUNCTION RAMP", ":FUNCTION PULSE", ":FUNCTION PULSE", ":FUNCTION:SYMMETRY 50", ":FUNCTION:DTYCYCLE 100", ":FUNCTION:LOAD OFF", ":CH1:COUPLING DC", ":CH1:COUPLING GND", ":TRIGGER:SINGLE:SWEEP AUTO", ":TRIGGER:SINGLE:SWEEP SINGLE", ":TRIGGER:SINGLE:COUPLING DC", ":ACQUIRE:DEPMEM 8K"}, backend.Commands)
 }
 
 // TestMeasurementKindsPreserveUnits verifies typed measurement selectors use their documented suffix and units.

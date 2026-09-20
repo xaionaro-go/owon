@@ -17,6 +17,10 @@ const (
 	//
 	// Example: each bulk read accepts complete USB packets.
 	endpointReadBytes = 4096
+	// responseDrainLengthPrefixBytes is the fixed prefix on a length-prefixed response.
+	//
+	// Example: the preflight drain permits one configured maximum payload plus four prefix bytes.
+	responseDrainLengthPrefixBytes = 4
 	// noResponseProbeDuration bounds the quiet probe after setters.
 	//
 	// Example: setters probe for five milliseconds.
@@ -61,6 +65,14 @@ type endpointSession struct {
 	needsIdleProbe bool
 }
 
+// responseDrainReport records bounded bytes and reads consumed by candidate preflight.
+//
+// Example: a stale 604-byte frame reports 604 discarded bytes and one quiet-probe read.
+type responseDrainReport struct {
+	DiscardedBytes int
+	ReadCalls      int
+}
+
 // newEndpointSession validates endpoints and constructs their framing state.
 //
 // Example: deterministic tests inject fragmented readers and short writers.
@@ -81,6 +93,105 @@ func newEndpointSession(
 	}
 
 	return &endpointSession{reader: reader, writer: writer, maximumBytes: maximumBytes}, nil
+}
+
+// drainPending discards bounded candidate bytes and accepts only its own quiet-probe timeout.
+// It does not replace verifyNoResponse or alter needsIdleProbe; a deferred endpoint error remains
+// a failure, and callers use this method only for a newly opened candidate. The bounded window
+// isolates observed bytes but does not prove that later hardware bytes are absent.
+//
+// Example: recovery drains a stale response before issuing the candidate identity query.
+func (session *endpointSession) drainPending(
+	ctx context.Context,
+) (_report responseDrainReport, _err error) {
+	if ctx != nil {
+		logger.Tracef(ctx, "endpointSession.drainPending")
+		defer
+		// traceResult records bounded preflight completion without logging discarded bytes.
+		//
+		// Example: a rejected candidate retains its endpoint error for recovery diagnostics.
+		func() { logger.Tracef(ctx, "/endpointSession.drainPending: %v", _err) }()
+	}
+
+	if session == nil {
+		return _report, &ErrUnavailable{Operation: "drain endpoint session", Resource: "session", Reason: "is nil"}
+	}
+	if ctx == nil {
+		return _report, &ErrUnavailable{Operation: "drain endpoint session", Resource: "context", Reason: "is nil"}
+	}
+	if session.reader == nil {
+		return _report, &ErrUnavailable{Operation: "drain endpoint session", Resource: "reader", Reason: "is nil"}
+	}
+	if session.deferredErr != nil {
+		return _report, fmt.Errorf("drain endpoint session with deferred error: %w", session.deferredErr)
+	}
+
+	maximumBytes, err := owonprotocol.NormalizeResponseLimit(session.maximumBytes)
+	if err != nil {
+		return _report, err
+	}
+	maximumDiscarded := uint64(maximumBytes) + responseDrainLengthPrefixBytes
+	_report.DiscardedBytes = len(session.buffer)
+	session.buffer = nil
+	if uint64(_report.DiscardedBytes) > maximumDiscarded {
+		return _report, fmt.Errorf(
+			"drain endpoint session discarded %d bytes beyond cap %d: %w",
+			_report.DiscardedBytes,
+			maximumDiscarded,
+			&owonprotocol.ErrResponseTooLarge{Size: uint64(_report.DiscardedBytes), Limit: maximumDiscarded},
+		)
+	}
+
+	probeCtx, cancel := context.WithTimeout(ctx, noResponseProbeDuration)
+	defer cancel()
+	var chunk [endpointReadBytes]byte
+	for {
+		count, err := session.reader.ReadContext(probeCtx, chunk[:])
+		_report.ReadCalls++
+		if count < 0 || count > len(chunk) {
+			return _report, errors.Join(
+				fmt.Errorf("drain endpoint session returned invalid count %d", count),
+				endpointContextError(ctx, err),
+				ctx.Err(),
+			)
+		}
+		if requestErr := ctx.Err(); requestErr != nil {
+			return _report, errors.Join(
+				fmt.Errorf("drain endpoint session canceled by caller: %w", requestErr),
+				endpointContextError(ctx, err),
+			)
+		}
+		if count > 0 {
+			_report.DiscardedBytes += count
+			if uint64(_report.DiscardedBytes) > maximumDiscarded {
+				return _report, errors.Join(
+					fmt.Errorf(
+						"drain endpoint session discarded %d bytes beyond cap %d: %w",
+						_report.DiscardedBytes,
+						maximumDiscarded,
+						&owonprotocol.ErrResponseTooLarge{Size: uint64(_report.DiscardedBytes), Limit: maximumDiscarded},
+					),
+					endpointContextError(ctx, err),
+				)
+			}
+			if err != nil || probeCtx.Err() != nil {
+				return _report, fmt.Errorf(
+					"drain endpoint session received %d bytes with an error: %w",
+					count,
+					&owonprotocol.ErrSurplusResponse{Bytes: count, Cause: endpointContextError(ctx, err)},
+				)
+			}
+			continue
+		}
+		if err == nil {
+			return _report, fmt.Errorf("drain endpoint session: %w", io.ErrNoProgress)
+		}
+		if isNoResponseTimeout(probeCtx, ctx, err) {
+			return _report, nil
+		}
+
+		return _report, fmt.Errorf("drain endpoint session: %w", endpointContextError(ctx, err))
+	}
 }
 
 // Exchange writes one command and reads its explicitly selected response frame.

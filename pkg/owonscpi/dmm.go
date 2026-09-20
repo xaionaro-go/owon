@@ -75,6 +75,125 @@ func dmmFunctionCommand(
 	}
 }
 
+// DMMFunctionQuery selects the verified readback form for one DMM function dimension.
+//
+// Example: resistance uses the generic CONFIGURE query, while voltage uses CONFIGURE:VOLTAGE.
+func DMMFunctionQuery(function owonmodel.DMMFunction) (owonprotocol.Command, error) {
+	switch function {
+	case owonmodel.DMMFunctionVoltage:
+		return owonprotocol.Command{Text: ":DMM:CONFIGURE:VOLTAGE?", ResponseMode: owonprotocol.ResponseModeASCII}, nil
+	case owonmodel.DMMFunctionCurrent:
+		return owonprotocol.Command{Text: ":DMM:CONFIGURE:CURRENT?", ResponseMode: owonprotocol.ResponseModeASCII}, nil
+	case owonmodel.DMMFunctionResistance, owonmodel.DMMFunctionCapacitance, owonmodel.DMMFunctionDiode, owonmodel.DMMFunctionContinuity:
+		return owonprotocol.Command{Text: ":DMM:CONFIGURE?", ResponseMode: owonprotocol.ResponseModeASCII}, nil
+	default:
+		return owonprotocol.Command{}, fmt.Errorf("query DMM function %d: %w", function, &owonmodel.ErrInvalidRequest{Reason: "function is not supported"})
+	}
+}
+
+// DMMRangeQuery selects the documented multimeter range readback.
+//
+// Example: a state snapshot executes this ASCII query before exposing a typed range.
+func DMMRangeQuery() owonprotocol.Command {
+	return owonprotocol.Command{Text: ":DMM:RANGE?", ResponseMode: owonprotocol.ResponseModeASCII}
+}
+
+// ParseDMMRange decodes one documented multimeter range token.
+//
+// Example: `mV` becomes DMMRangeMV while an unverified device-specific token is malformed.
+func ParseDMMRange(response []byte) (owonmodel.DMMRange, error) {
+	fields := strings.Fields(strings.TrimSpace(string(response)))
+	if len(fields) != 1 {
+		return owonmodel.DMMRangeUnspecified, &ErrMalformedResponse{Reason: "DMM range reply has an invalid field count"}
+	}
+	switch strings.ToUpper(fields[0]) {
+	case "ON":
+		return owonmodel.DMMRangeOn, nil
+	case "MV":
+		return owonmodel.DMMRangeMV, nil
+	case "V":
+		return owonmodel.DMMRangeV, nil
+	default:
+		return owonmodel.DMMRangeUnspecified, &ErrMalformedResponse{Reason: "DMM range reply token is unknown"}
+	}
+}
+
+// ErrDMMFunctionUnavailable identifies the instrument's transient DMM function-query sentinel.
+//
+// Example: the exact trimmed `error` reply resets a convergence match count without being treated as malformed data.
+type ErrDMMFunctionUnavailable struct {
+	Function owonmodel.DMMFunction
+}
+
+// Error describes a function query that the instrument could not answer yet.
+//
+// Example: a controller retries this typed condition during its bounded convergence barrier.
+func (err *ErrDMMFunctionUnavailable) Error() string {
+	if err == nil {
+		return "DMM function query unavailable"
+	}
+	return fmt.Sprintf("DMM function query unavailable for %d", err.Function)
+}
+
+// Unwrap reports that the device sentinel is a leaf classification.
+//
+// Example: errors.As identifies the transient condition without parsing its text.
+func (*ErrDMMFunctionUnavailable) Unwrap() error {
+	return nil
+}
+
+// ParseDMMFunction decodes one function-dimension query reply without claiming full device state.
+// For voltage/current queries, the returned Function is the query context and CurrentType is the observed AC/DC token; neither field alone proves the instrument's active function.
+//
+// Example: ParseDMMFunction(DMMFunctionDiode, []byte("RESistance")) returns a valid resistance nonmatch.
+func ParseDMMFunction(
+	function owonmodel.DMMFunction,
+	response []byte,
+) (*owonmodel.DMMFunctionSelection, error) {
+	if _, err := DMMFunctionQuery(function); err != nil {
+		return nil, err
+	}
+	fields := strings.Fields(strings.TrimSpace(string(response)))
+	if len(fields) == 0 {
+		return nil, &ErrMalformedResponse{Reason: "DMM function reply is empty"}
+	}
+	if len(fields) != 1 {
+		return nil, &ErrMalformedResponse{Reason: "DMM function reply has an invalid field count"}
+	}
+	token := fields[0]
+	if token == "error" {
+		return nil, &ErrDMMFunctionUnavailable{Function: function}
+	}
+	switch strings.ToUpper(token) {
+	case "AC":
+		if function != owonmodel.DMMFunctionVoltage && function != owonmodel.DMMFunctionCurrent {
+			return nil, &ErrMalformedResponse{Reason: "AC reply is invalid for generic DMM function query"}
+		}
+		currentType := owonmodel.DMMCurrentTypeAC
+		return &owonmodel.DMMFunctionSelection{Function: function, CurrentType: &currentType}, nil
+	case "DC":
+		if function != owonmodel.DMMFunctionVoltage && function != owonmodel.DMMFunctionCurrent {
+			return nil, &ErrMalformedResponse{Reason: "DC reply is invalid for generic DMM function query"}
+		}
+		currentType := owonmodel.DMMCurrentTypeDC
+		return &owonmodel.DMMFunctionSelection{Function: function, CurrentType: &currentType}, nil
+	case "VOLTAGE":
+		return &owonmodel.DMMFunctionSelection{Function: owonmodel.DMMFunctionVoltage}, nil
+	case "CURRENT":
+		return &owonmodel.DMMFunctionSelection{Function: owonmodel.DMMFunctionCurrent}, nil
+	case "RESISTANCE":
+		return &owonmodel.DMMFunctionSelection{Function: owonmodel.DMMFunctionResistance}, nil
+	case "CAPACITANCE":
+		return &owonmodel.DMMFunctionSelection{Function: owonmodel.DMMFunctionCapacitance}, nil
+	case "DIODE":
+		return &owonmodel.DMMFunctionSelection{Function: owonmodel.DMMFunctionDiode}, nil
+	case "CONTINUITY":
+		return &owonmodel.DMMFunctionSelection{Function: owonmodel.DMMFunctionContinuity}, nil
+	default:
+		return nil, &ErrMalformedResponse{Reason: "DMM function reply token is unknown"}
+	}
+}
+
 // DMMMeasurementQuery selects the current digital-multimeter scalar reading.
 //
 // Example: the controller executes this ASCII query before parsing and timestamping its result.

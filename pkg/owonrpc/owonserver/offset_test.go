@@ -55,10 +55,10 @@ func TestScreenOffsetsRemainRawAndOptional(t *testing.T) {
 	t.Parallel()
 	for _, offset := range []string{"", `,"OFFSET":null`, `,"OFFSET":0`, `,"OFFSET":-78`, `,"OFFSET":-49`, `,"OFFSET":1.25`} {
 		rawHeader := []byte(`{"TIMEBASE":{"SCALE":"20us"` + replaceOffsetName(offset) + `},"SAMPLE":{"TYPE":"SAMPle"},"CHANNEL":[{"NAME":"CH1","DISPLAY":"ON","COUPLING":"DC","PROBE":"10X","SCALE":"1.00V"` + offset + `}],"Trig":{"Mode":"SINGLE","Type":"EDGE","Items":{"Channel":"CH1","Level":"1V","Edge":"RISE","Coupling":"DC","Sweep":"AUTO"}}}`)
-		backend := &scriptedBackend{Responses: map[string][]byte{"*IDN?": []byte("OWON,HDS2202S,25061855,V2.6.0"), ":DATA:WAVE:SCREEN:HEAD?": rawHeader}}
+		backend := &scriptedBackend{Responses: map[string][]byte{"*IDN?": []byte("OWON,HDS2202S,25061855,V2.6.0"), ":DATA:WAVE:SCREEN:HEAD?": rawHeader, ":DMM:RANGE?": []byte("mV")}}
 		snapshot, err := newControlClient(t, backend).State(t.Context(), &pb.GetStateRequest{IncludeControls: true})
 		require.NoError(t, err)
-		require.Equal(t, []string{"*IDN?", ":DATA:WAVE:SCREEN:HEAD?"}, backend.Commands)
+		require.Equal(t, []string{"*IDN?", ":DATA:WAVE:SCREEN:HEAD?", ":DMM:RANGE?"}, backend.Commands)
 		encoded, err := protojson.Marshal(snapshot)
 		require.NoError(t, err)
 		var state map[string]json.RawMessage

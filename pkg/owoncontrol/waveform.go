@@ -2,6 +2,7 @@ package owoncontrol
 
 import (
 	"context"
+	"errors"
 	"fmt"
 	"time"
 
@@ -39,14 +40,16 @@ func (controller *Controller) Waveform(
 		return nil, err
 	}
 	defer transaction.Close()
+	captureStartedAt := time.Now()
 	header, err := transaction.Execute(ctx, owonscpi.ScreenHeaderQuery())
 	if err != nil {
 		return nil, fmt.Errorf("query waveform header: %w", err)
 	}
-	if _, err := owonscpi.ParseScreenHeader(header); err != nil {
+	if err := owonscpi.ValidateScreenTraceHeader(header); err != nil {
 		return nil, fmt.Errorf("parse waveform header: %w", err)
 	}
 	data, err := transaction.Execute(ctx, query)
+	capturedAt := time.Now()
 	if err != nil {
 		return nil, fmt.Errorf("query waveform channel %d: %w", request.Channel, err)
 	}
@@ -57,8 +60,19 @@ func (controller *Controller) Waveform(
 		Data:             data,
 		Encoding:         "owon-raw-unverified",
 		ScreenHeaderJSON: header,
-		CapturedAt:       time.Now(),
+		CapturedAt:       capturedAt,
+		CaptureStartedAt: captureStartedAt,
 		Metadata:         metadata,
+	}
+	trace, err := owonscpi.DecodeScreenTrace(request.Channel, header, data)
+	var unsupported *owonscpi.ErrUnsupportedScreenProfile
+	switch {
+	case err == nil:
+		waveform.ScreenTrace = trace
+	case errors.As(err, &unsupported):
+		waveform.ScreenTraceUnavailableReason = unsupported.Reason
+	default:
+		return nil, fmt.Errorf("decode waveform channel %d screen trace: %w", request.Channel, err)
 	}
 	return waveform, nil
 }

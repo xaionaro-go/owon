@@ -163,7 +163,7 @@ func prepareRPCRequestOrWriteRejection(
 		return message, nil
 	}
 	switch request.URL.Path {
-	case "/api/run", "/api/stop", "/api/single":
+	case "/api/run", "/api/stop", "/api/single", "/api/auto":
 		return message, nil
 	}
 	if err := decodeProtoBody(writer, request, message); err != nil {
@@ -179,7 +179,7 @@ func routeRequest(path string) (proto.Message, string) {
 	switch path {
 	case "/api/device", "/api/dmm/measurement":
 		return new(emptypb.Empty), http.MethodGet
-	case "/api/run", "/api/stop", "/api/single":
+	case "/api/run", "/api/stop", "/api/single", "/api/auto":
 		return new(emptypb.Empty), http.MethodPost
 	case "/api/state":
 		return new(pb.GetStateRequest), http.MethodPost
@@ -230,6 +230,8 @@ func (handler *httpHandler) call(
 	case *pb.SetMeasurementRequest:
 		return handler.client.SetMeasurement(ctx, request)
 	case *pb.SetGeneratorRequest:
+		observe := true
+		request.Observe = &observe
 		return handler.client.SetGenerator(ctx, request)
 	case *pb.SetDmmRequest:
 		return handler.client.SetDmm(ctx, request)
@@ -247,6 +249,8 @@ func (handler *httpHandler) call(
 			return handler.client.Stop(ctx, request)
 		case "/api/single":
 			return handler.client.Single(ctx, request)
+		case "/api/auto":
+			return handler.client.Auto(ctx, request)
 		}
 	}
 	return nil, &ErrInvalidWebProtocol{Reason: fmt.Sprintf("unsupported RPC request %T for %s", message, path)}
@@ -341,7 +345,20 @@ func writeRPCError(
 	err error,
 ) error {
 	rpcStatus := status.Convert(err)
-	payload, marshalErr := json.Marshal(map[string]string{"code": rpcStatus.Code().String(), "message": rpcStatus.Message()})
+	body := map[string]any{"code": rpcStatus.Code().String(), "message": rpcStatus.Message()}
+	for _, detail := range rpcStatus.Details() {
+		generator, ok := detail.(*pb.GeneratorOperationResult)
+		if !ok {
+			continue
+		}
+		generatorJSON, generatorErr := (protojson.MarshalOptions{UseProtoNames: false}).Marshal(generator)
+		if generatorErr != nil {
+			return errors.Join(err, fmt.Errorf("serialize generator RPC detail: %w", generatorErr))
+		}
+		body["generator"] = json.RawMessage(generatorJSON)
+		break
+	}
+	payload, marshalErr := json.Marshal(body)
 	if marshalErr != nil {
 		return errors.Join(err, fmt.Errorf("serialize RPC error: %w", marshalErr))
 	}

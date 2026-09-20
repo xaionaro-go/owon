@@ -138,6 +138,43 @@ func TestClientReadPaths(t *testing.T) {
 	}
 }
 
+// TestClientStateIncludesTypedDMMRange verifies observed range readback crosses the complete RPC boundary.
+//
+// Example: a documented mV response is exposed as DMM_RANGE_MV without inventing a native hold state.
+func TestClientStateIncludesTypedDMMRange(t *testing.T) {
+	t.Parallel()
+
+	backend := &scriptedBackend{Responses: map[string][]byte{
+		"*IDN?":                   []byte("OWON,HDS2202S,25061855,V2.6.0"),
+		":DATA:WAVE:SCREEN:HEAD?": []byte(`{"TIMEBASE":{"SCALE":"20us"},"SAMPLE":{"TYPE":"SAMPle"},"CHANNEL":[{"NAME":"CH1","DISPLAY":"ON","COUPLING":"DC","PROBE":"10X","SCALE":"1.00V"}],"Trig":{"Mode":"SINGLE","Type":"EDGE","Items":{"Channel":"CH1","Level":"1V","Edge":"RISE","Coupling":"DC","Sweep":"AUTO"}}}`),
+		":DMM:RANGE?":             []byte("mV"),
+	}}
+	snapshot, err := newControlClient(t, backend).State(t.Context(), &pb.GetStateRequest{IncludeControls: true})
+	require.NoError(t, err)
+	require.NotNil(t, snapshot.GetDmm())
+	require.Equal(t, pb.DmmRange_DMM_RANGE_MV, snapshot.GetDmm().GetRange())
+	require.Equal(t, "mV", snapshot.GetDmm().GetObservedRangeToken())
+	require.Equal(t, []string{"*IDN?", ":DATA:WAVE:SCREEN:HEAD?", ":DMM:RANGE?"}, backend.Commands)
+}
+
+// TestClientStateKeepsUnknownDMMRangeAsUnspecified verifies a device-specific range token is not promoted or fatal.
+//
+// Example: the live `10A` dialect reply reaches RPC as DMM_RANGE_UNSPECIFIED while the state request succeeds.
+func TestClientStateKeepsUnknownDMMRangeAsUnspecified(t *testing.T) {
+	t.Parallel()
+
+	backend := &scriptedBackend{Responses: map[string][]byte{
+		"*IDN?":                   []byte("OWON,HDS2202S,25061855,V2.6.0"),
+		":DATA:WAVE:SCREEN:HEAD?": []byte(`{"TIMEBASE":{"SCALE":"20us"},"SAMPLE":{"TYPE":"SAMPle"},"CHANNEL":[{"NAME":"CH1","DISPLAY":"ON","COUPLING":"DC","PROBE":"10X","SCALE":"1.00V"}],"Trig":{"Mode":"SINGLE","Type":"EDGE","Items":{"Channel":"CH1","Level":"1V","Edge":"RISE","Coupling":"DC","Sweep":"AUTO"}}}`),
+		":DMM:RANGE?":             []byte("10A"),
+	}}
+	snapshot, err := newControlClient(t, backend).State(t.Context(), &pb.GetStateRequest{IncludeControls: true})
+	require.NoError(t, err)
+	require.NotNil(t, snapshot.GetDmm())
+	require.Equal(t, pb.DmmRange_DMM_RANGE_UNSPECIFIED, snapshot.GetDmm().GetRange())
+	require.Equal(t, "10A", snapshot.GetDmm().GetObservedRangeToken())
+}
+
 // requireClientRequestBoundary checks nil requests and unavailable clients without issuing remote work.
 //
 // Example: a nil setter request returns client ErrInvalidInput while a nil client returns ErrUnavailable.

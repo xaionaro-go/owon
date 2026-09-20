@@ -2,7 +2,9 @@ package owoncontrol
 
 import (
 	"context"
+	"errors"
 	"fmt"
+	"strings"
 	"time"
 
 	"github.com/facebookincubator/go-belt/tool/logger"
@@ -75,6 +77,24 @@ func (controller *Controller) State(
 	state.Acquisition = controls.Acquisition
 	state.Horizontal = controls.Horizontal
 	state.Trigger = controls.Trigger
+	state.DMM = &owonmodel.DMMState{}
+	rangeResponse, rangeErr := transaction.Execute(ctx, owonscpi.DMMRangeQuery())
+	if rangeErr != nil {
+		if ctx != nil && ctx.Err() != nil {
+			return nil, fmt.Errorf("capture DMM range: %w", rangeErr)
+		}
+		return state, nil
+	}
+	rangeValue, err := owonscpi.ParseDMMRange(rangeResponse)
+	if err != nil {
+		var malformed *owonscpi.ErrMalformedResponse
+		if !errors.As(err, &malformed) {
+			return nil, fmt.Errorf("decode DMM range: %w", err)
+		}
+		rangeValue = owonmodel.DMMRangeUnspecified
+	}
+	state.DMM.Range = rangeValue
+	state.DMM.ObservedRangeToken = strings.TrimSpace(string(rangeResponse))
 
 	return state, nil
 }

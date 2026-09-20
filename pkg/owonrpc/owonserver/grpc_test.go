@@ -309,16 +309,16 @@ func TestServerRejectsUnsafeRawExecute(t *testing.T) {
 
 // TestServerReportsUnsupportedControls verifies documented capability gaps are stable statuses.
 //
-// Example: HDS200 averaging is reported as Unimplemented instead of device unavailability.
+// Example: HDS200 average-count control is reported as Unimplemented instead of device unavailability.
 func TestServerReportsUnsupportedControls(t *testing.T) {
 	t.Parallel()
 
 	backend := &scriptedBackend{}
 	instrument := newTestInstrument(t, backend)
 	server := requireNewServer(t, instrument)
-	mode := pb.AcquisitionMode_ACQUISITION_MODE_AVERAGE
+	averageCount := uint32(16)
 
-	_, err := server.SetAcquisition(context.Background(), &pb.SetAcquisitionRequest{Mode: &mode})
+	_, err := server.SetAcquisition(context.Background(), &pb.SetAcquisitionRequest{AverageCount: &averageCount})
 	require.Equal(t, codes.Unimplemented, status.Code(err))
 	require.Empty(t, backend.Commands)
 }

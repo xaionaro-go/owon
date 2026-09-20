@@ -73,6 +73,10 @@ func TestEmbeddedUIUsesApprovedDisclosureAndFriendlyLabels(t *testing.T) {
 	require.Contains(t, body, `class="brand-mark"`)
 	require.Contains(t, body, "<summary>")
 	require.Contains(t, body, `placeholder="1.0ms"`)
+	require.Contains(t, body, `class="badge">LOGICAL READBACK</span>`)
+	require.NotContains(t, body, `class="badge">WRITE ONLY</span>`)
+	require.Contains(t, body, "bounded logical operation readback")
+	require.Contains(t, body, "does not validate electrical output")
 }
 
 // TestHandlerAcceptsProtoJSONForChannelPatch verifies browser field names reach the typed RPC boundary.
@@ -847,6 +851,17 @@ func (service *fakeService) Stop(
 //
 // Example: POST `/api/single` can be covered with the fake client.
 func (service *fakeService) Single(
+	context.Context,
+	*emptypb.Empty,
+	...grpc.CallOption,
+) (*pb.CommandResult, error) {
+	return &pb.CommandResult{}, nil
+}
+
+// Auto returns a successful empty command result for the source-backed action.
+//
+// Example: the browser can verify POST `/api/auto` without a device connection.
+func (service *fakeService) Auto(
 	context.Context,
 	*emptypb.Empty,
 	...grpc.CallOption,

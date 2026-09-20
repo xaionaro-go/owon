@@ -50,12 +50,37 @@ func WaveformToProto(value *owonmodel.Waveform) *pb.Waveform {
 		return nil
 	}
 	result := &pb.Waveform{
-		Channel:          pb.Channel(value.Channel),
-		Data:             slices.Clone(value.Data),
-		Encoding:         value.Encoding,
-		ScreenHeaderJson: slices.Clone(value.ScreenHeaderJSON),
-		CapturedAt:       timestamppb.New(value.CapturedAt),
-		Metadata:         WaveformMetadataToProto(value.Metadata),
+		Channel:                      pb.Channel(value.Channel),
+		Data:                         slices.Clone(value.Data),
+		Encoding:                     value.Encoding,
+		ScreenHeaderJson:             slices.Clone(value.ScreenHeaderJSON),
+		CapturedAt:                   timestamppb.New(value.CapturedAt),
+		Metadata:                     WaveformMetadataToProto(value.Metadata),
+		ScreenTrace:                  ScreenTraceToProto(value.ScreenTrace),
+		ScreenTraceUnavailableReason: value.ScreenTraceUnavailableReason,
+		CaptureStartedAt:             timestamppb.New(value.CaptureStartedAt),
 	}
 	return result
+}
+
+// ScreenTraceToProto converts display coordinates with independent mutable ownership.
+// The dialect validates signed coordinate bounds before constructing native traces.
+//
+// Example: negative Y values remain negative on the wire and are clipped only by rendering.
+func ScreenTraceToProto(value *owonmodel.ScreenTrace) *pb.ScreenTrace {
+	if value == nil {
+		return nil
+	}
+	var y []int32
+	if value.Y != nil {
+		y = make([]int32, len(value.Y))
+		for i, coordinate := range value.Y {
+			y[i] = int32(coordinate)
+		}
+	}
+	return &pb.ScreenTrace{
+		Profile: value.Profile, Width: uint32(value.Width), Height: uint32(value.Height),
+		HorizontalDivisions: uint32(value.HorizontalDivisions), VerticalDivisions: uint32(value.VerticalDivisions),
+		Y: y, GroundY: int32(value.GroundY),
+	}
 }

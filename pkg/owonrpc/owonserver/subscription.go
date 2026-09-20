@@ -118,13 +118,15 @@ func (producer *subscriptionProducer) enqueueWaveform(event *pb.Event) error {
 
 // subscriptionPollWeight estimates one poll's transport command count.
 //
-// Example: identity plus one measurement and one waveform costs four command units.
+// Example: controls cost two state reads because they fetch the screen header and DMM range.
 func subscriptionPollWeight(request *pb.SubscribeRequest) int {
 	if request == nil {
 		return 0
 	}
 	weight := 1 + len(request.Measurements)
-	if request.IncludeScreenHeader || request.IncludeControls {
+	if request.IncludeControls {
+		weight += 2
+	} else if request.IncludeScreenHeader {
 		weight++
 	}
 	weight += 2 * len(request.WaveformChannels)

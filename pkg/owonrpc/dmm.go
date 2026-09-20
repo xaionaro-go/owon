@@ -31,11 +31,12 @@ func DMMStateToProto(value *owonmodel.DMMState) *pb.DmmState {
 		return nil
 	}
 	result := &pb.DmmState{
-		Function:    pb.DmmFunction(value.Function),
-		CurrentType: pb.DmmCurrentType(value.CurrentType),
-		Relative:    value.Relative,
-		Range:       pb.DmmRange(value.Range),
-		AutoRange:   value.AutoRange,
+		Function:           pb.DmmFunction(value.Function),
+		CurrentType:        pb.DmmCurrentType(value.CurrentType),
+		Relative:           value.Relative,
+		Range:              pb.DmmRange(value.Range),
+		AutoRange:          value.AutoRange,
+		ObservedRangeToken: value.ObservedRangeToken,
 	}
 	return result
 }

@@ -2,6 +2,7 @@ package owoncontrol
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/facebookincubator/go-belt/tool/logger"
 	"github.com/xaionaro-go/owon/pkg/owonmodel"
@@ -29,7 +30,33 @@ func (controller *Controller) SetAcquisition(
 	if err != nil {
 		return err
 	}
-	return controller.executeWrites(ctx, commands)
+	if request.Mode == nil || *request.Mode != owonmodel.AcquisitionModeAverage {
+		return controller.executeWrites(ctx, commands)
+	}
+	session, err := controller.sessionForOperation("set acquisition")
+	if err != nil {
+		return err
+	}
+	transaction, err := session.Begin(ctx)
+	if err != nil {
+		return err
+	}
+	defer transaction.Close()
+	if err := controller.executeWritesWith(ctx, transaction, commands); err != nil {
+		return err
+	}
+	response, err := transaction.Execute(ctx, owonscpi.AcquisitionModeQuery())
+	if err != nil {
+		return fmt.Errorf("verify acquisition mode: %w", err)
+	}
+	observed, err := owonscpi.ParseAcquisitionMode(response)
+	if err != nil {
+		return fmt.Errorf("verify acquisition mode: %w", err)
+	}
+	if observed != *request.Mode {
+		return fmt.Errorf("verify acquisition mode: requested %d, observed %d: %w", *request.Mode, observed, &owonscpi.ErrUnsupportedControl{Control: "average mode on this firmware"})
+	}
+	return nil
 }
 
 // Run starts or resumes continuous acquisition.
@@ -78,4 +105,21 @@ func (controller *Controller) Single(ctx context.Context) (_err error) {
 	}
 
 	return controller.executeWrites(ctx, []owonprotocol.Command{owonscpi.SingleCommand()})
+}
+
+// Auto sends the source-backed autoset candidate without requesting readback.
+//
+// Example: completion means only that the no-response command reached the
+// transport; physical firmware acceptance and resulting settings are unknown.
+func (controller *Controller) Auto(ctx context.Context) (_err error) {
+	if ctx != nil {
+		logger.Tracef(ctx, "Controller.Auto")
+		defer
+		// traceResult records completion without logging response payloads.
+		//
+		// Example: a failed operation retains its contextual diagnostic fields.
+		func() { logger.Tracef(ctx, "/Controller.Auto: %v", _err) }()
+	}
+
+	return controller.executeWrites(ctx, []owonprotocol.Command{owonscpi.AutoCommand()})
 }

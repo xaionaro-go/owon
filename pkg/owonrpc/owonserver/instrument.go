@@ -104,6 +104,14 @@ type Instrument interface {
 	) error
 }
 
+// autoInstrument is the optional source-backed autoset action surface.
+//
+// Example: existing consumer Instrument implementations remain valid while a
+// native controller opts into the explicitly unverified no-response action.
+type autoInstrument interface {
+	Auto(context.Context) error
+}
+
 // isNilInstrument rejects typed nil implementations before storing the interface.
 //
 // Example: a nil controller pointer cannot create a seemingly available service.

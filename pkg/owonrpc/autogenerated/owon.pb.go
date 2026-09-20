@@ -502,28 +502,52 @@ type GeneratorWaveform int32
 
 const (
 	// Vendor-documented tokens; software serialization tests do not prove physical SET acceptance.
-	GeneratorWaveform_GENERATOR_WAVEFORM_UNSPECIFIED GeneratorWaveform = 0
-	GeneratorWaveform_GENERATOR_WAVEFORM_SINE        GeneratorWaveform = 1
-	GeneratorWaveform_GENERATOR_WAVEFORM_SQUARE      GeneratorWaveform = 2
-	GeneratorWaveform_GENERATOR_WAVEFORM_RAMP        GeneratorWaveform = 3
-	GeneratorWaveform_GENERATOR_WAVEFORM_PULSE       GeneratorWaveform = 4
+	GeneratorWaveform_GENERATOR_WAVEFORM_UNSPECIFIED   GeneratorWaveform = 0
+	GeneratorWaveform_GENERATOR_WAVEFORM_SINE          GeneratorWaveform = 1
+	GeneratorWaveform_GENERATOR_WAVEFORM_SQUARE        GeneratorWaveform = 2
+	GeneratorWaveform_GENERATOR_WAVEFORM_RAMP          GeneratorWaveform = 3
+	GeneratorWaveform_GENERATOR_WAVEFORM_PULSE         GeneratorWaveform = 4
+	GeneratorWaveform_GENERATOR_WAVEFORM_AMP_ALT       GeneratorWaveform = 5
+	GeneratorWaveform_GENERATOR_WAVEFORM_ATT_ALT       GeneratorWaveform = 6
+	GeneratorWaveform_GENERATOR_WAVEFORM_STAIR_DOWN    GeneratorWaveform = 7
+	GeneratorWaveform_GENERATOR_WAVEFORM_STAIR_UP_DOWN GeneratorWaveform = 8
+	GeneratorWaveform_GENERATOR_WAVEFORM_STAIR_UP      GeneratorWaveform = 9
+	GeneratorWaveform_GENERATOR_WAVEFORM_BESSEL_J      GeneratorWaveform = 10
+	GeneratorWaveform_GENERATOR_WAVEFORM_BESSEL_Y      GeneratorWaveform = 11
+	GeneratorWaveform_GENERATOR_WAVEFORM_SINC          GeneratorWaveform = 12
 )
 
 // Enum value maps for GeneratorWaveform.
 var (
 	GeneratorWaveform_name = map[int32]string{
-		0: "GENERATOR_WAVEFORM_UNSPECIFIED",
-		1: "GENERATOR_WAVEFORM_SINE",
-		2: "GENERATOR_WAVEFORM_SQUARE",
-		3: "GENERATOR_WAVEFORM_RAMP",
-		4: "GENERATOR_WAVEFORM_PULSE",
+		0:  "GENERATOR_WAVEFORM_UNSPECIFIED",
+		1:  "GENERATOR_WAVEFORM_SINE",
+		2:  "GENERATOR_WAVEFORM_SQUARE",
+		3:  "GENERATOR_WAVEFORM_RAMP",
+		4:  "GENERATOR_WAVEFORM_PULSE",
+		5:  "GENERATOR_WAVEFORM_AMP_ALT",
+		6:  "GENERATOR_WAVEFORM_ATT_ALT",
+		7:  "GENERATOR_WAVEFORM_STAIR_DOWN",
+		8:  "GENERATOR_WAVEFORM_STAIR_UP_DOWN",
+		9:  "GENERATOR_WAVEFORM_STAIR_UP",
+		10: "GENERATOR_WAVEFORM_BESSEL_J",
+		11: "GENERATOR_WAVEFORM_BESSEL_Y",
+		12: "GENERATOR_WAVEFORM_SINC",
 	}
 	GeneratorWaveform_value = map[string]int32{
-		"GENERATOR_WAVEFORM_UNSPECIFIED": 0,
-		"GENERATOR_WAVEFORM_SINE":        1,
-		"GENERATOR_WAVEFORM_SQUARE":      2,
-		"GENERATOR_WAVEFORM_RAMP":        3,
-		"GENERATOR_WAVEFORM_PULSE":       4,
+		"GENERATOR_WAVEFORM_UNSPECIFIED":   0,
+		"GENERATOR_WAVEFORM_SINE":          1,
+		"GENERATOR_WAVEFORM_SQUARE":        2,
+		"GENERATOR_WAVEFORM_RAMP":          3,
+		"GENERATOR_WAVEFORM_PULSE":         4,
+		"GENERATOR_WAVEFORM_AMP_ALT":       5,
+		"GENERATOR_WAVEFORM_ATT_ALT":       6,
+		"GENERATOR_WAVEFORM_STAIR_DOWN":    7,
+		"GENERATOR_WAVEFORM_STAIR_UP_DOWN": 8,
+		"GENERATOR_WAVEFORM_STAIR_UP":      9,
+		"GENERATOR_WAVEFORM_BESSEL_J":      10,
+		"GENERATOR_WAVEFORM_BESSEL_Y":      11,
+		"GENERATOR_WAVEFORM_SINC":          12,
 	}
 )
 
@@ -664,6 +688,223 @@ func (GeneratorLoad) EnumDescriptor() ([]byte, []int) {
 	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{11}
 }
 
+type GeneratorObservationStatus int32
+
+const (
+	GeneratorObservationStatus_GENERATOR_OBSERVATION_UNSPECIFIED GeneratorObservationStatus = 0
+	GeneratorObservationStatus_GENERATOR_OBSERVATION_OBSERVED    GeneratorObservationStatus = 1
+	GeneratorObservationStatus_GENERATOR_OBSERVATION_UNVERIFIED  GeneratorObservationStatus = 2
+	GeneratorObservationStatus_GENERATOR_OBSERVATION_UNAVAILABLE GeneratorObservationStatus = 3
+	GeneratorObservationStatus_GENERATOR_OBSERVATION_MALFORMED   GeneratorObservationStatus = 4
+	GeneratorObservationStatus_GENERATOR_OBSERVATION_UNKNOWN     GeneratorObservationStatus = 5
+)
+
+// Enum value maps for GeneratorObservationStatus.
+var (
+	GeneratorObservationStatus_name = map[int32]string{
+		0: "GENERATOR_OBSERVATION_UNSPECIFIED",
+		1: "GENERATOR_OBSERVATION_OBSERVED",
+		2: "GENERATOR_OBSERVATION_UNVERIFIED",
+		3: "GENERATOR_OBSERVATION_UNAVAILABLE",
+		4: "GENERATOR_OBSERVATION_MALFORMED",
+		5: "GENERATOR_OBSERVATION_UNKNOWN",
+	}
+	GeneratorObservationStatus_value = map[string]int32{
+		"GENERATOR_OBSERVATION_UNSPECIFIED": 0,
+		"GENERATOR_OBSERVATION_OBSERVED":    1,
+		"GENERATOR_OBSERVATION_UNVERIFIED":  2,
+		"GENERATOR_OBSERVATION_UNAVAILABLE": 3,
+		"GENERATOR_OBSERVATION_MALFORMED":   4,
+		"GENERATOR_OBSERVATION_UNKNOWN":     5,
+	}
+)
+
+func (x GeneratorObservationStatus) Enum() *GeneratorObservationStatus {
+	p := new(GeneratorObservationStatus)
+	*p = x
+	return p
+}
+
+func (x GeneratorObservationStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (GeneratorObservationStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_pkg_owonrpc_owon_proto_enumTypes[12].Descriptor()
+}
+
+func (GeneratorObservationStatus) Type() protoreflect.EnumType {
+	return &file_pkg_owonrpc_owon_proto_enumTypes[12]
+}
+
+func (x GeneratorObservationStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use GeneratorObservationStatus.Descriptor instead.
+func (GeneratorObservationStatus) EnumDescriptor() ([]byte, []int) {
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{12}
+}
+
+type GeneratorContextStatus int32
+
+const (
+	GeneratorContextStatus_GENERATOR_CONTEXT_UNSPECIFIED GeneratorContextStatus = 0
+	GeneratorContextStatus_GENERATOR_CONTEXT_MATCH       GeneratorContextStatus = 1
+	GeneratorContextStatus_GENERATOR_CONTEXT_MISMATCH    GeneratorContextStatus = 2
+	GeneratorContextStatus_GENERATOR_CONTEXT_UNKNOWN     GeneratorContextStatus = 3
+)
+
+// Enum value maps for GeneratorContextStatus.
+var (
+	GeneratorContextStatus_name = map[int32]string{
+		0: "GENERATOR_CONTEXT_UNSPECIFIED",
+		1: "GENERATOR_CONTEXT_MATCH",
+		2: "GENERATOR_CONTEXT_MISMATCH",
+		3: "GENERATOR_CONTEXT_UNKNOWN",
+	}
+	GeneratorContextStatus_value = map[string]int32{
+		"GENERATOR_CONTEXT_UNSPECIFIED": 0,
+		"GENERATOR_CONTEXT_MATCH":       1,
+		"GENERATOR_CONTEXT_MISMATCH":    2,
+		"GENERATOR_CONTEXT_UNKNOWN":     3,
+	}
+)
+
+func (x GeneratorContextStatus) Enum() *GeneratorContextStatus {
+	p := new(GeneratorContextStatus)
+	*p = x
+	return p
+}
+
+func (x GeneratorContextStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (GeneratorContextStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_pkg_owonrpc_owon_proto_enumTypes[13].Descriptor()
+}
+
+func (GeneratorContextStatus) Type() protoreflect.EnumType {
+	return &file_pkg_owonrpc_owon_proto_enumTypes[13]
+}
+
+func (x GeneratorContextStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use GeneratorContextStatus.Descriptor instead.
+func (GeneratorContextStatus) EnumDescriptor() ([]byte, []int) {
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{13}
+}
+
+type GeneratorDeliveryStatus int32
+
+const (
+	GeneratorDeliveryStatus_GENERATOR_DELIVERY_NOT_ATTEMPTED                          GeneratorDeliveryStatus = 0
+	GeneratorDeliveryStatus_GENERATOR_DELIVERY_TRANSPORT_COMPLETE_READBACK_VERIFIED   GeneratorDeliveryStatus = 1
+	GeneratorDeliveryStatus_GENERATOR_DELIVERY_TRANSPORT_COMPLETE_READBACK_UNVERIFIED GeneratorDeliveryStatus = 2
+	GeneratorDeliveryStatus_GENERATOR_DELIVERY_PARTIAL_OR_UNKNOWN                     GeneratorDeliveryStatus = 3
+)
+
+// Enum value maps for GeneratorDeliveryStatus.
+var (
+	GeneratorDeliveryStatus_name = map[int32]string{
+		0: "GENERATOR_DELIVERY_NOT_ATTEMPTED",
+		1: "GENERATOR_DELIVERY_TRANSPORT_COMPLETE_READBACK_VERIFIED",
+		2: "GENERATOR_DELIVERY_TRANSPORT_COMPLETE_READBACK_UNVERIFIED",
+		3: "GENERATOR_DELIVERY_PARTIAL_OR_UNKNOWN",
+	}
+	GeneratorDeliveryStatus_value = map[string]int32{
+		"GENERATOR_DELIVERY_NOT_ATTEMPTED":                          0,
+		"GENERATOR_DELIVERY_TRANSPORT_COMPLETE_READBACK_VERIFIED":   1,
+		"GENERATOR_DELIVERY_TRANSPORT_COMPLETE_READBACK_UNVERIFIED": 2,
+		"GENERATOR_DELIVERY_PARTIAL_OR_UNKNOWN":                     3,
+	}
+)
+
+func (x GeneratorDeliveryStatus) Enum() *GeneratorDeliveryStatus {
+	p := new(GeneratorDeliveryStatus)
+	*p = x
+	return p
+}
+
+func (x GeneratorDeliveryStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (GeneratorDeliveryStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_pkg_owonrpc_owon_proto_enumTypes[14].Descriptor()
+}
+
+func (GeneratorDeliveryStatus) Type() protoreflect.EnumType {
+	return &file_pkg_owonrpc_owon_proto_enumTypes[14]
+}
+
+func (x GeneratorDeliveryStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use GeneratorDeliveryStatus.Descriptor instead.
+func (GeneratorDeliveryStatus) EnumDescriptor() ([]byte, []int) {
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{14}
+}
+
+type GeneratorOutputCompensationStatus int32
+
+const (
+	GeneratorOutputCompensationStatus_GENERATOR_OUTPUT_COMPENSATION_NOT_ATTEMPTED GeneratorOutputCompensationStatus = 0
+	GeneratorOutputCompensationStatus_GENERATOR_OUTPUT_COMPENSATION_NOT_REQUIRED  GeneratorOutputCompensationStatus = 1
+	GeneratorOutputCompensationStatus_GENERATOR_OUTPUT_COMPENSATION_VERIFIED      GeneratorOutputCompensationStatus = 2
+	GeneratorOutputCompensationStatus_GENERATOR_OUTPUT_COMPENSATION_UNVERIFIED    GeneratorOutputCompensationStatus = 3
+	GeneratorOutputCompensationStatus_GENERATOR_OUTPUT_COMPENSATION_FAILED        GeneratorOutputCompensationStatus = 4
+)
+
+// Enum value maps for GeneratorOutputCompensationStatus.
+var (
+	GeneratorOutputCompensationStatus_name = map[int32]string{
+		0: "GENERATOR_OUTPUT_COMPENSATION_NOT_ATTEMPTED",
+		1: "GENERATOR_OUTPUT_COMPENSATION_NOT_REQUIRED",
+		2: "GENERATOR_OUTPUT_COMPENSATION_VERIFIED",
+		3: "GENERATOR_OUTPUT_COMPENSATION_UNVERIFIED",
+		4: "GENERATOR_OUTPUT_COMPENSATION_FAILED",
+	}
+	GeneratorOutputCompensationStatus_value = map[string]int32{
+		"GENERATOR_OUTPUT_COMPENSATION_NOT_ATTEMPTED": 0,
+		"GENERATOR_OUTPUT_COMPENSATION_NOT_REQUIRED":  1,
+		"GENERATOR_OUTPUT_COMPENSATION_VERIFIED":      2,
+		"GENERATOR_OUTPUT_COMPENSATION_UNVERIFIED":    3,
+		"GENERATOR_OUTPUT_COMPENSATION_FAILED":        4,
+	}
+)
+
+func (x GeneratorOutputCompensationStatus) Enum() *GeneratorOutputCompensationStatus {
+	p := new(GeneratorOutputCompensationStatus)
+	*p = x
+	return p
+}
+
+func (x GeneratorOutputCompensationStatus) String() string {
+	return protoimpl.X.EnumStringOf(x.Descriptor(), protoreflect.EnumNumber(x))
+}
+
+func (GeneratorOutputCompensationStatus) Descriptor() protoreflect.EnumDescriptor {
+	return file_pkg_owonrpc_owon_proto_enumTypes[15].Descriptor()
+}
+
+func (GeneratorOutputCompensationStatus) Type() protoreflect.EnumType {
+	return &file_pkg_owonrpc_owon_proto_enumTypes[15]
+}
+
+func (x GeneratorOutputCompensationStatus) Number() protoreflect.EnumNumber {
+	return protoreflect.EnumNumber(x)
+}
+
+// Deprecated: Use GeneratorOutputCompensationStatus.Descriptor instead.
+func (GeneratorOutputCompensationStatus) EnumDescriptor() ([]byte, []int) {
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{15}
+}
+
 type DmmRange int32
 
 const (
@@ -700,11 +941,11 @@ func (x DmmRange) String() string {
 }
 
 func (DmmRange) Descriptor() protoreflect.EnumDescriptor {
-	return file_pkg_owonrpc_owon_proto_enumTypes[12].Descriptor()
+	return file_pkg_owonrpc_owon_proto_enumTypes[16].Descriptor()
 }
 
 func (DmmRange) Type() protoreflect.EnumType {
-	return &file_pkg_owonrpc_owon_proto_enumTypes[12]
+	return &file_pkg_owonrpc_owon_proto_enumTypes[16]
 }
 
 func (x DmmRange) Number() protoreflect.EnumNumber {
@@ -713,7 +954,7 @@ func (x DmmRange) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DmmRange.Descriptor instead.
 func (DmmRange) EnumDescriptor() ([]byte, []int) {
-	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{12}
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{16}
 }
 
 type DmmCurrentType int32
@@ -749,11 +990,11 @@ func (x DmmCurrentType) String() string {
 }
 
 func (DmmCurrentType) Descriptor() protoreflect.EnumDescriptor {
-	return file_pkg_owonrpc_owon_proto_enumTypes[13].Descriptor()
+	return file_pkg_owonrpc_owon_proto_enumTypes[17].Descriptor()
 }
 
 func (DmmCurrentType) Type() protoreflect.EnumType {
-	return &file_pkg_owonrpc_owon_proto_enumTypes[13]
+	return &file_pkg_owonrpc_owon_proto_enumTypes[17]
 }
 
 func (x DmmCurrentType) Number() protoreflect.EnumNumber {
@@ -762,7 +1003,7 @@ func (x DmmCurrentType) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use DmmCurrentType.Descriptor instead.
 func (DmmCurrentType) EnumDescriptor() ([]byte, []int) {
-	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{13}
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{17}
 }
 
 type Capability int32
@@ -804,11 +1045,11 @@ func (x Capability) String() string {
 }
 
 func (Capability) Descriptor() protoreflect.EnumDescriptor {
-	return file_pkg_owonrpc_owon_proto_enumTypes[14].Descriptor()
+	return file_pkg_owonrpc_owon_proto_enumTypes[18].Descriptor()
 }
 
 func (Capability) Type() protoreflect.EnumType {
-	return &file_pkg_owonrpc_owon_proto_enumTypes[14]
+	return &file_pkg_owonrpc_owon_proto_enumTypes[18]
 }
 
 func (x Capability) Number() protoreflect.EnumNumber {
@@ -817,7 +1058,7 @@ func (x Capability) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use Capability.Descriptor instead.
 func (Capability) EnumDescriptor() ([]byte, []int) {
-	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{14}
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{18}
 }
 
 type ServiceErrorCategory int32
@@ -862,11 +1103,11 @@ func (x ServiceErrorCategory) String() string {
 }
 
 func (ServiceErrorCategory) Descriptor() protoreflect.EnumDescriptor {
-	return file_pkg_owonrpc_owon_proto_enumTypes[15].Descriptor()
+	return file_pkg_owonrpc_owon_proto_enumTypes[19].Descriptor()
 }
 
 func (ServiceErrorCategory) Type() protoreflect.EnumType {
-	return &file_pkg_owonrpc_owon_proto_enumTypes[15]
+	return &file_pkg_owonrpc_owon_proto_enumTypes[19]
 }
 
 func (x ServiceErrorCategory) Number() protoreflect.EnumNumber {
@@ -875,7 +1116,7 @@ func (x ServiceErrorCategory) Number() protoreflect.EnumNumber {
 
 // Deprecated: Use ServiceErrorCategory.Descriptor instead.
 func (ServiceErrorCategory) EnumDescriptor() ([]byte, []int) {
-	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{15}
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{19}
 }
 
 type DeviceSelector struct {
@@ -1507,13 +1748,14 @@ func (x *TriggerState) GetStatus() string {
 type GeneratorState struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Queries exist, but no complete validated mapping populates this typed state.
-	Waveform       GeneratorWaveform `protobuf:"varint,1,opt,name=waveform,proto3,enum=xaionaro.owon.GeneratorWaveform" json:"waveform,omitempty"`
-	FrequencyHz    float64           `protobuf:"fixed64,2,opt,name=frequency_hz,json=frequencyHz,proto3" json:"frequency_hz,omitempty"`
-	PeriodSeconds  float64           `protobuf:"fixed64,3,opt,name=period_seconds,json=periodSeconds,proto3" json:"period_seconds,omitempty"`
-	AmplitudeVolts float64           `protobuf:"fixed64,4,opt,name=amplitude_volts,json=amplitudeVolts,proto3" json:"amplitude_volts,omitempty"`
-	OffsetVolts    float64           `protobuf:"fixed64,5,opt,name=offset_volts,json=offsetVolts,proto3" json:"offset_volts,omitempty"`
-	HighVolts      float64           `protobuf:"fixed64,6,opt,name=high_volts,json=highVolts,proto3" json:"high_volts,omitempty"`
-	LowVolts       float64           `protobuf:"fixed64,7,opt,name=low_volts,json=lowVolts,proto3" json:"low_volts,omitempty"`
+	Waveform      GeneratorWaveform `protobuf:"varint,1,opt,name=waveform,proto3,enum=xaionaro.owon.GeneratorWaveform" json:"waveform,omitempty"`
+	FrequencyHz   float64           `protobuf:"fixed64,2,opt,name=frequency_hz,json=frequencyHz,proto3" json:"frequency_hz,omitempty"`
+	PeriodSeconds float64           `protobuf:"fixed64,3,opt,name=period_seconds,json=periodSeconds,proto3" json:"period_seconds,omitempty"`
+	// Amplitude in volts peak-to-peak (Vpp).
+	AmplitudeVolts float64 `protobuf:"fixed64,4,opt,name=amplitude_volts,json=amplitudeVolts,proto3" json:"amplitude_volts,omitempty"`
+	OffsetVolts    float64 `protobuf:"fixed64,5,opt,name=offset_volts,json=offsetVolts,proto3" json:"offset_volts,omitempty"`
+	HighVolts      float64 `protobuf:"fixed64,6,opt,name=high_volts,json=highVolts,proto3" json:"high_volts,omitempty"`
+	LowVolts       float64 `protobuf:"fixed64,7,opt,name=low_volts,json=lowVolts,proto3" json:"low_volts,omitempty"`
 	// The documented query representation is floating point, unlike integer writes.
 	SymmetryPercent   float64       `protobuf:"fixed64,8,opt,name=symmetry_percent,json=symmetryPercent,proto3" json:"symmetry_percent,omitempty"`
 	PulseWidthSeconds float64       `protobuf:"fixed64,9,opt,name=pulse_width_seconds,json=pulseWidthSeconds,proto3" json:"pulse_width_seconds,omitempty"`
@@ -1655,14 +1897,15 @@ func (x *GeneratorState) GetOutput() bool {
 }
 
 type DmmState struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	Function      DmmFunction            `protobuf:"varint,1,opt,name=function,proto3,enum=xaionaro.owon.DmmFunction" json:"function,omitempty"`
-	CurrentType   DmmCurrentType         `protobuf:"varint,2,opt,name=current_type,json=currentType,proto3,enum=xaionaro.owon.DmmCurrentType" json:"current_type,omitempty"`
-	Relative      bool                   `protobuf:"varint,3,opt,name=relative,proto3" json:"relative,omitempty"`
-	Range         DmmRange               `protobuf:"varint,4,opt,name=range,proto3,enum=xaionaro.owon.DmmRange" json:"range,omitempty"`
-	AutoRange     bool                   `protobuf:"varint,5,opt,name=auto_range,json=autoRange,proto3" json:"auto_range,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	state              protoimpl.MessageState `protogen:"open.v1"`
+	Function           DmmFunction            `protobuf:"varint,1,opt,name=function,proto3,enum=xaionaro.owon.DmmFunction" json:"function,omitempty"`
+	CurrentType        DmmCurrentType         `protobuf:"varint,2,opt,name=current_type,json=currentType,proto3,enum=xaionaro.owon.DmmCurrentType" json:"current_type,omitempty"`
+	Relative           bool                   `protobuf:"varint,3,opt,name=relative,proto3" json:"relative,omitempty"`
+	Range              DmmRange               `protobuf:"varint,4,opt,name=range,proto3,enum=xaionaro.owon.DmmRange" json:"range,omitempty"`
+	AutoRange          bool                   `protobuf:"varint,5,opt,name=auto_range,json=autoRange,proto3" json:"auto_range,omitempty"`
+	ObservedRangeToken string                 `protobuf:"bytes,6,opt,name=observed_range_token,json=observedRangeToken,proto3" json:"observed_range_token,omitempty"`
+	unknownFields      protoimpl.UnknownFields
+	sizeCache          protoimpl.SizeCache
 }
 
 func (x *DmmState) Reset() {
@@ -1730,6 +1973,13 @@ func (x *DmmState) GetAutoRange() bool {
 	return false
 }
 
+func (x *DmmState) GetObservedRangeToken() string {
+	if x != nil {
+		return x.ObservedRangeToken
+	}
+	return ""
+}
+
 type StateSnapshot struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
 	Device           *DeviceInfo            `protobuf:"bytes,1,opt,name=device,proto3" json:"device,omitempty"`
@@ -1742,7 +1992,7 @@ type StateSnapshot struct {
 	Trigger          *TriggerState          `protobuf:"bytes,8,opt,name=trigger,proto3" json:"trigger,omitempty"`
 	// Omitted until a complete generator query-to-state mapping is validated.
 	Generator *GeneratorState `protobuf:"bytes,9,opt,name=generator,proto3" json:"generator,omitempty"`
-	// Omitted because no verified generic HDS2202S DMM-state query is available.
+	// Only verified DMM range readback is populated; other dimensions remain unspecified.
 	Dmm           *DmmState `protobuf:"bytes,10,opt,name=dmm,proto3" json:"dmm,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
@@ -1945,8 +2195,10 @@ func (x *ExecuteResponse) GetData() []byte {
 }
 
 type CommandResult struct {
-	state         protoimpl.MessageState `protogen:"open.v1"`
-	AppliedAt     *timestamppb.Timestamp `protobuf:"bytes,1,opt,name=applied_at,json=appliedAt,proto3" json:"applied_at,omitempty"`
+	state protoimpl.MessageState `protogen:"open.v1"`
+	// Transport completion only; this timestamp is not device readback.
+	AppliedAt     *timestamppb.Timestamp    `protobuf:"bytes,1,opt,name=applied_at,json=appliedAt,proto3" json:"applied_at,omitempty"`
+	Generator     *GeneratorOperationResult `protobuf:"bytes,2,opt,name=generator,proto3" json:"generator,omitempty"`
 	unknownFields protoimpl.UnknownFields
 	sizeCache     protoimpl.SizeCache
 }
@@ -1988,6 +2240,361 @@ func (x *CommandResult) GetAppliedAt() *timestamppb.Timestamp {
 	return nil
 }
 
+func (x *CommandResult) GetGenerator() *GeneratorOperationResult {
+	if x != nil {
+		return x.Generator
+	}
+	return nil
+}
+
+type GeneratorWaveformContext struct {
+	state         protoimpl.MessageState `protogen:"open.v1"`
+	Requested     *GeneratorWaveform     `protobuf:"varint,1,opt,name=requested,proto3,enum=xaionaro.owon.GeneratorWaveform,oneof" json:"requested,omitempty"`
+	Observed      *GeneratorWaveform     `protobuf:"varint,2,opt,name=observed,proto3,enum=xaionaro.owon.GeneratorWaveform,oneof" json:"observed,omitempty"`
+	ObservedToken string                 `protobuf:"bytes,3,opt,name=observed_token,json=observedToken,proto3" json:"observed_token,omitempty"`
+	Match         GeneratorContextStatus `protobuf:"varint,4,opt,name=match,proto3,enum=xaionaro.owon.GeneratorContextStatus" json:"match,omitempty"`
+	ObservedRaw   string                 `protobuf:"bytes,5,opt,name=observed_raw,json=observedRaw,proto3" json:"observed_raw,omitempty"`
+	Reason        string                 `protobuf:"bytes,6,opt,name=reason,proto3" json:"reason,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GeneratorWaveformContext) Reset() {
+	*x = GeneratorWaveformContext{}
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[15]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GeneratorWaveformContext) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GeneratorWaveformContext) ProtoMessage() {}
+
+func (x *GeneratorWaveformContext) ProtoReflect() protoreflect.Message {
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[15]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GeneratorWaveformContext.ProtoReflect.Descriptor instead.
+func (*GeneratorWaveformContext) Descriptor() ([]byte, []int) {
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{15}
+}
+
+func (x *GeneratorWaveformContext) GetRequested() GeneratorWaveform {
+	if x != nil && x.Requested != nil {
+		return *x.Requested
+	}
+	return GeneratorWaveform_GENERATOR_WAVEFORM_UNSPECIFIED
+}
+
+func (x *GeneratorWaveformContext) GetObserved() GeneratorWaveform {
+	if x != nil && x.Observed != nil {
+		return *x.Observed
+	}
+	return GeneratorWaveform_GENERATOR_WAVEFORM_UNSPECIFIED
+}
+
+func (x *GeneratorWaveformContext) GetObservedToken() string {
+	if x != nil {
+		return x.ObservedToken
+	}
+	return ""
+}
+
+func (x *GeneratorWaveformContext) GetMatch() GeneratorContextStatus {
+	if x != nil {
+		return x.Match
+	}
+	return GeneratorContextStatus_GENERATOR_CONTEXT_UNSPECIFIED
+}
+
+func (x *GeneratorWaveformContext) GetObservedRaw() string {
+	if x != nil {
+		return x.ObservedRaw
+	}
+	return ""
+}
+
+func (x *GeneratorWaveformContext) GetReason() string {
+	if x != nil {
+		return x.Reason
+	}
+	return ""
+}
+
+type GeneratorOutputObservation struct {
+	state         protoimpl.MessageState     `protogen:"open.v1"`
+	Status        GeneratorObservationStatus `protobuf:"varint,1,opt,name=status,proto3,enum=xaionaro.owon.GeneratorObservationStatus" json:"status,omitempty"`
+	Value         *bool                      `protobuf:"varint,2,opt,name=value,proto3,oneof" json:"value,omitempty"`
+	Token         string                     `protobuf:"bytes,3,opt,name=token,proto3" json:"token,omitempty"`
+	Raw           string                     `protobuf:"bytes,4,opt,name=raw,proto3" json:"raw,omitempty"`
+	Reason        string                     `protobuf:"bytes,5,opt,name=reason,proto3" json:"reason,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GeneratorOutputObservation) Reset() {
+	*x = GeneratorOutputObservation{}
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[16]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GeneratorOutputObservation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GeneratorOutputObservation) ProtoMessage() {}
+
+func (x *GeneratorOutputObservation) ProtoReflect() protoreflect.Message {
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[16]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GeneratorOutputObservation.ProtoReflect.Descriptor instead.
+func (*GeneratorOutputObservation) Descriptor() ([]byte, []int) {
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{16}
+}
+
+func (x *GeneratorOutputObservation) GetStatus() GeneratorObservationStatus {
+	if x != nil {
+		return x.Status
+	}
+	return GeneratorObservationStatus_GENERATOR_OBSERVATION_UNSPECIFIED
+}
+
+func (x *GeneratorOutputObservation) GetValue() bool {
+	if x != nil && x.Value != nil {
+		return *x.Value
+	}
+	return false
+}
+
+func (x *GeneratorOutputObservation) GetToken() string {
+	if x != nil {
+		return x.Token
+	}
+	return ""
+}
+
+func (x *GeneratorOutputObservation) GetRaw() string {
+	if x != nil {
+		return x.Raw
+	}
+	return ""
+}
+
+func (x *GeneratorOutputObservation) GetReason() string {
+	if x != nil {
+		return x.Reason
+	}
+	return ""
+}
+
+type GeneratorObservation struct {
+	state         protoimpl.MessageState      `protogen:"open.v1"`
+	CapturedAt    *timestamppb.Timestamp      `protobuf:"bytes,1,opt,name=captured_at,json=capturedAt,proto3" json:"captured_at,omitempty"`
+	Context       *GeneratorWaveformContext   `protobuf:"bytes,2,opt,name=context,proto3" json:"context,omitempty"`
+	Output        *GeneratorOutputObservation `protobuf:"bytes,3,opt,name=output,proto3" json:"output,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GeneratorObservation) Reset() {
+	*x = GeneratorObservation{}
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[17]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GeneratorObservation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GeneratorObservation) ProtoMessage() {}
+
+func (x *GeneratorObservation) ProtoReflect() protoreflect.Message {
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[17]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GeneratorObservation.ProtoReflect.Descriptor instead.
+func (*GeneratorObservation) Descriptor() ([]byte, []int) {
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{17}
+}
+
+func (x *GeneratorObservation) GetCapturedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CapturedAt
+	}
+	return nil
+}
+
+func (x *GeneratorObservation) GetContext() *GeneratorWaveformContext {
+	if x != nil {
+		return x.Context
+	}
+	return nil
+}
+
+func (x *GeneratorObservation) GetOutput() *GeneratorOutputObservation {
+	if x != nil {
+		return x.Output
+	}
+	return nil
+}
+
+type GeneratorOutputCompensation struct {
+	state         protoimpl.MessageState            `protogen:"open.v1"`
+	Requested     *bool                             `protobuf:"varint,1,opt,name=requested,proto3,oneof" json:"requested,omitempty"`
+	Observed      *bool                             `protobuf:"varint,2,opt,name=observed,proto3,oneof" json:"observed,omitempty"`
+	Status        GeneratorOutputCompensationStatus `protobuf:"varint,3,opt,name=status,proto3,enum=xaionaro.owon.GeneratorOutputCompensationStatus" json:"status,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
+}
+
+func (x *GeneratorOutputCompensation) Reset() {
+	*x = GeneratorOutputCompensation{}
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[18]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GeneratorOutputCompensation) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GeneratorOutputCompensation) ProtoMessage() {}
+
+func (x *GeneratorOutputCompensation) ProtoReflect() protoreflect.Message {
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[18]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GeneratorOutputCompensation.ProtoReflect.Descriptor instead.
+func (*GeneratorOutputCompensation) Descriptor() ([]byte, []int) {
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{18}
+}
+
+func (x *GeneratorOutputCompensation) GetRequested() bool {
+	if x != nil && x.Requested != nil {
+		return *x.Requested
+	}
+	return false
+}
+
+func (x *GeneratorOutputCompensation) GetObserved() bool {
+	if x != nil && x.Observed != nil {
+		return *x.Observed
+	}
+	return false
+}
+
+func (x *GeneratorOutputCompensation) GetStatus() GeneratorOutputCompensationStatus {
+	if x != nil {
+		return x.Status
+	}
+	return GeneratorOutputCompensationStatus_GENERATOR_OUTPUT_COMPENSATION_NOT_ATTEMPTED
+}
+
+type GeneratorOperationResult struct {
+	state           protoimpl.MessageState       `protogen:"open.v1"`
+	Delivery        GeneratorDeliveryStatus      `protobuf:"varint,1,opt,name=delivery,proto3,enum=xaionaro.owon.GeneratorDeliveryStatus" json:"delivery,omitempty"`
+	Observation     *GeneratorObservation        `protobuf:"bytes,2,opt,name=observation,proto3" json:"observation,omitempty"`
+	CompletedWrites []string                     `protobuf:"bytes,3,rep,name=completed_writes,json=completedWrites,proto3" json:"completed_writes,omitempty"`
+	Compensation    *GeneratorOutputCompensation `protobuf:"bytes,4,opt,name=compensation,proto3" json:"compensation,omitempty"`
+	unknownFields   protoimpl.UnknownFields
+	sizeCache       protoimpl.SizeCache
+}
+
+func (x *GeneratorOperationResult) Reset() {
+	*x = GeneratorOperationResult{}
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[19]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *GeneratorOperationResult) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*GeneratorOperationResult) ProtoMessage() {}
+
+func (x *GeneratorOperationResult) ProtoReflect() protoreflect.Message {
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[19]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use GeneratorOperationResult.ProtoReflect.Descriptor instead.
+func (*GeneratorOperationResult) Descriptor() ([]byte, []int) {
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{19}
+}
+
+func (x *GeneratorOperationResult) GetDelivery() GeneratorDeliveryStatus {
+	if x != nil {
+		return x.Delivery
+	}
+	return GeneratorDeliveryStatus_GENERATOR_DELIVERY_NOT_ATTEMPTED
+}
+
+func (x *GeneratorOperationResult) GetObservation() *GeneratorObservation {
+	if x != nil {
+		return x.Observation
+	}
+	return nil
+}
+
+func (x *GeneratorOperationResult) GetCompletedWrites() []string {
+	if x != nil {
+		return x.CompletedWrites
+	}
+	return nil
+}
+
+func (x *GeneratorOperationResult) GetCompensation() *GeneratorOutputCompensation {
+	if x != nil {
+		return x.Compensation
+	}
+	return nil
+}
+
 type SetChannelRequest struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
 	Channel          Channel                `protobuf:"varint,1,opt,name=channel,proto3,enum=xaionaro.owon.Channel" json:"channel,omitempty"`
@@ -2005,7 +2612,7 @@ type SetChannelRequest struct {
 
 func (x *SetChannelRequest) Reset() {
 	*x = SetChannelRequest{}
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[15]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[20]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2017,7 +2624,7 @@ func (x *SetChannelRequest) String() string {
 func (*SetChannelRequest) ProtoMessage() {}
 
 func (x *SetChannelRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[15]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[20]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2030,7 +2637,7 @@ func (x *SetChannelRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetChannelRequest.ProtoReflect.Descriptor instead.
 func (*SetChannelRequest) Descriptor() ([]byte, []int) {
-	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{15}
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{20}
 }
 
 func (x *SetChannelRequest) GetChannel() Channel {
@@ -2100,7 +2707,7 @@ type SetAcquisitionRequest struct {
 
 func (x *SetAcquisitionRequest) Reset() {
 	*x = SetAcquisitionRequest{}
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[16]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[21]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2112,7 +2719,7 @@ func (x *SetAcquisitionRequest) String() string {
 func (*SetAcquisitionRequest) ProtoMessage() {}
 
 func (x *SetAcquisitionRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[16]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[21]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2125,7 +2732,7 @@ func (x *SetAcquisitionRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetAcquisitionRequest.ProtoReflect.Descriptor instead.
 func (*SetAcquisitionRequest) Descriptor() ([]byte, []int) {
-	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{16}
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{21}
 }
 
 func (x *SetAcquisitionRequest) GetMode() AcquisitionMode {
@@ -2160,7 +2767,7 @@ type SetHorizontalRequest struct {
 
 func (x *SetHorizontalRequest) Reset() {
 	*x = SetHorizontalRequest{}
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[17]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[22]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2172,7 +2779,7 @@ func (x *SetHorizontalRequest) String() string {
 func (*SetHorizontalRequest) ProtoMessage() {}
 
 func (x *SetHorizontalRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[17]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[22]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2185,7 +2792,7 @@ func (x *SetHorizontalRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetHorizontalRequest.ProtoReflect.Descriptor instead.
 func (*SetHorizontalRequest) Descriptor() ([]byte, []int) {
-	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{17}
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{22}
 }
 
 func (x *SetHorizontalRequest) GetScale() string {
@@ -2215,7 +2822,7 @@ type SetTriggerRequest struct {
 
 func (x *SetTriggerRequest) Reset() {
 	*x = SetTriggerRequest{}
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[18]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[23]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2227,7 +2834,7 @@ func (x *SetTriggerRequest) String() string {
 func (*SetTriggerRequest) ProtoMessage() {}
 
 func (x *SetTriggerRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[18]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[23]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2240,7 +2847,7 @@ func (x *SetTriggerRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetTriggerRequest.ProtoReflect.Descriptor instead.
 func (*SetTriggerRequest) Descriptor() ([]byte, []int) {
-	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{18}
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{23}
 }
 
 func (x *SetTriggerRequest) GetSource() TriggerSource {
@@ -2289,7 +2896,7 @@ type SetMeasurementRequest struct {
 
 func (x *SetMeasurementRequest) Reset() {
 	*x = SetMeasurementRequest{}
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[19]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[24]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2301,7 +2908,7 @@ func (x *SetMeasurementRequest) String() string {
 func (*SetMeasurementRequest) ProtoMessage() {}
 
 func (x *SetMeasurementRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[19]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[24]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2314,7 +2921,7 @@ func (x *SetMeasurementRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetMeasurementRequest.ProtoReflect.Descriptor instead.
 func (*SetMeasurementRequest) Descriptor() ([]byte, []int) {
-	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{19}
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{24}
 }
 
 func (x *SetMeasurementRequest) GetDisplay() bool {
@@ -2342,27 +2949,34 @@ type SetGeneratorRequest struct {
 	state protoimpl.MessageState `protogen:"open.v1"`
 	// Retained vendor/transcribed grammar, not physical SET proof; see docs/usb-protocol.md.
 	// Duty/rise/fall interpretation remains uncertain. Execute permits explicitly framed raw queries.
-	Waveform          *GeneratorWaveform `protobuf:"varint,1,opt,name=waveform,proto3,enum=xaionaro.owon.GeneratorWaveform,oneof" json:"waveform,omitempty"`
-	FrequencyHz       *float64           `protobuf:"fixed64,2,opt,name=frequency_hz,json=frequencyHz,proto3,oneof" json:"frequency_hz,omitempty"`
-	PeriodSeconds     *float64           `protobuf:"fixed64,3,opt,name=period_seconds,json=periodSeconds,proto3,oneof" json:"period_seconds,omitempty"`
-	AmplitudeVolts    *float64           `protobuf:"fixed64,4,opt,name=amplitude_volts,json=amplitudeVolts,proto3,oneof" json:"amplitude_volts,omitempty"`
-	OffsetVolts       *float64           `protobuf:"fixed64,5,opt,name=offset_volts,json=offsetVolts,proto3,oneof" json:"offset_volts,omitempty"`
-	HighVolts         *float64           `protobuf:"fixed64,6,opt,name=high_volts,json=highVolts,proto3,oneof" json:"high_volts,omitempty"`
-	LowVolts          *float64           `protobuf:"fixed64,7,opt,name=low_volts,json=lowVolts,proto3,oneof" json:"low_volts,omitempty"`
-	SymmetryPercent   *int32             `protobuf:"varint,8,opt,name=symmetry_percent,json=symmetryPercent,proto3,oneof" json:"symmetry_percent,omitempty"`
-	PulseWidthSeconds *float64           `protobuf:"fixed64,9,opt,name=pulse_width_seconds,json=pulseWidthSeconds,proto3,oneof" json:"pulse_width_seconds,omitempty"`
-	RisingSeconds     *float64           `protobuf:"fixed64,10,opt,name=rising_seconds,json=risingSeconds,proto3,oneof" json:"rising_seconds,omitempty"`
-	FallingSeconds    *float64           `protobuf:"fixed64,11,opt,name=falling_seconds,json=fallingSeconds,proto3,oneof" json:"falling_seconds,omitempty"`
-	DutyPercent       *float64           `protobuf:"fixed64,12,opt,name=duty_percent,json=dutyPercent,proto3,oneof" json:"duty_percent,omitempty"`
-	Load              *GeneratorLoad     `protobuf:"varint,13,opt,name=load,proto3,enum=xaionaro.owon.GeneratorLoad,oneof" json:"load,omitempty"`
-	Output            *bool              `protobuf:"varint,14,opt,name=output,proto3,oneof" json:"output,omitempty"`
-	unknownFields     protoimpl.UnknownFields
-	sizeCache         protoimpl.SizeCache
+	// Required with frequency, period, symmetry, duty, width, rising or falling.
+	// The typed API does not support symmetry, duty, width, rising or falling for builtins.
+	// Their builtin interpretation has not been verified on the device.
+	Waveform *GeneratorWaveform `protobuf:"varint,1,opt,name=waveform,proto3,enum=xaionaro.owon.GeneratorWaveform,oneof" json:"waveform,omitempty"`
+	// Frequency and period are mutually exclusive, even when reciprocal.
+	FrequencyHz   *float64 `protobuf:"fixed64,2,opt,name=frequency_hz,json=frequencyHz,proto3,oneof" json:"frequency_hz,omitempty"`
+	PeriodSeconds *float64 `protobuf:"fixed64,3,opt,name=period_seconds,json=periodSeconds,proto3,oneof" json:"period_seconds,omitempty"`
+	// Amplitude in volts peak-to-peak (Vpp).
+	AmplitudeVolts    *float64       `protobuf:"fixed64,4,opt,name=amplitude_volts,json=amplitudeVolts,proto3,oneof" json:"amplitude_volts,omitempty"`
+	OffsetVolts       *float64       `protobuf:"fixed64,5,opt,name=offset_volts,json=offsetVolts,proto3,oneof" json:"offset_volts,omitempty"`
+	HighVolts         *float64       `protobuf:"fixed64,6,opt,name=high_volts,json=highVolts,proto3,oneof" json:"high_volts,omitempty"`
+	LowVolts          *float64       `protobuf:"fixed64,7,opt,name=low_volts,json=lowVolts,proto3,oneof" json:"low_volts,omitempty"`
+	SymmetryPercent   *int32         `protobuf:"varint,8,opt,name=symmetry_percent,json=symmetryPercent,proto3,oneof" json:"symmetry_percent,omitempty"`
+	PulseWidthSeconds *float64       `protobuf:"fixed64,9,opt,name=pulse_width_seconds,json=pulseWidthSeconds,proto3,oneof" json:"pulse_width_seconds,omitempty"`
+	RisingSeconds     *float64       `protobuf:"fixed64,10,opt,name=rising_seconds,json=risingSeconds,proto3,oneof" json:"rising_seconds,omitempty"`
+	FallingSeconds    *float64       `protobuf:"fixed64,11,opt,name=falling_seconds,json=fallingSeconds,proto3,oneof" json:"falling_seconds,omitempty"`
+	DutyPercent       *float64       `protobuf:"fixed64,12,opt,name=duty_percent,json=dutyPercent,proto3,oneof" json:"duty_percent,omitempty"`
+	Load              *GeneratorLoad `protobuf:"varint,13,opt,name=load,proto3,enum=xaionaro.owon.GeneratorLoad,oneof" json:"load,omitempty"`
+	Output            *bool          `protobuf:"varint,14,opt,name=output,proto3,oneof" json:"output,omitempty"`
+	// WebUI and explicit clients may request the bounded observed result; omitted keeps legacy write-only semantics.
+	Observe       *bool `protobuf:"varint,15,opt,name=observe,proto3,oneof" json:"observe,omitempty"`
+	unknownFields protoimpl.UnknownFields
+	sizeCache     protoimpl.SizeCache
 }
 
 func (x *SetGeneratorRequest) Reset() {
 	*x = SetGeneratorRequest{}
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[20]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[25]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2374,7 +2988,7 @@ func (x *SetGeneratorRequest) String() string {
 func (*SetGeneratorRequest) ProtoMessage() {}
 
 func (x *SetGeneratorRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[20]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[25]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2387,7 +3001,7 @@ func (x *SetGeneratorRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetGeneratorRequest.ProtoReflect.Descriptor instead.
 func (*SetGeneratorRequest) Descriptor() ([]byte, []int) {
-	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{20}
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{25}
 }
 
 func (x *SetGeneratorRequest) GetWaveform() GeneratorWaveform {
@@ -2488,6 +3102,13 @@ func (x *SetGeneratorRequest) GetOutput() bool {
 	return false
 }
 
+func (x *SetGeneratorRequest) GetObserve() bool {
+	if x != nil && x.Observe != nil {
+		return *x.Observe
+	}
+	return false
+}
+
 type SetDmmRequest struct {
 	state         protoimpl.MessageState `protogen:"open.v1"`
 	Function      *DmmFunction           `protobuf:"varint,1,opt,name=function,proto3,enum=xaionaro.owon.DmmFunction,oneof" json:"function,omitempty"`
@@ -2501,7 +3122,7 @@ type SetDmmRequest struct {
 
 func (x *SetDmmRequest) Reset() {
 	*x = SetDmmRequest{}
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[21]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[26]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2513,7 +3134,7 @@ func (x *SetDmmRequest) String() string {
 func (*SetDmmRequest) ProtoMessage() {}
 
 func (x *SetDmmRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[21]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[26]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2526,7 +3147,7 @@ func (x *SetDmmRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SetDmmRequest.ProtoReflect.Descriptor instead.
 func (*SetDmmRequest) Descriptor() ([]byte, []int) {
-	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{21}
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{26}
 }
 
 func (x *SetDmmRequest) GetFunction() DmmFunction {
@@ -2578,7 +3199,7 @@ type DmmMeasurement struct {
 
 func (x *DmmMeasurement) Reset() {
 	*x = DmmMeasurement{}
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[22]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[27]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2590,7 +3211,7 @@ func (x *DmmMeasurement) String() string {
 func (*DmmMeasurement) ProtoMessage() {}
 
 func (x *DmmMeasurement) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[22]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[27]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2603,7 +3224,7 @@ func (x *DmmMeasurement) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use DmmMeasurement.ProtoReflect.Descriptor instead.
 func (*DmmMeasurement) Descriptor() ([]byte, []int) {
-	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{22}
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{27}
 }
 
 func (x *DmmMeasurement) GetFunction() DmmFunction {
@@ -2652,7 +3273,7 @@ type GetWaveformRequest struct {
 
 func (x *GetWaveformRequest) Reset() {
 	*x = GetWaveformRequest{}
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[23]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[28]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2664,7 +3285,7 @@ func (x *GetWaveformRequest) String() string {
 func (*GetWaveformRequest) ProtoMessage() {}
 
 func (x *GetWaveformRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[23]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[28]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2677,7 +3298,7 @@ func (x *GetWaveformRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use GetWaveformRequest.ProtoReflect.Descriptor instead.
 func (*GetWaveformRequest) Descriptor() ([]byte, []int) {
-	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{23}
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{28}
 }
 
 func (x *GetWaveformRequest) GetChannel() Channel {
@@ -2712,7 +3333,7 @@ type WaveformMetadata struct {
 
 func (x *WaveformMetadata) Reset() {
 	*x = WaveformMetadata{}
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[24]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[29]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2724,7 +3345,7 @@ func (x *WaveformMetadata) String() string {
 func (*WaveformMetadata) ProtoMessage() {}
 
 func (x *WaveformMetadata) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[24]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[29]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2737,7 +3358,7 @@ func (x *WaveformMetadata) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WaveformMetadata.ProtoReflect.Descriptor instead.
 func (*WaveformMetadata) Descriptor() ([]byte, []int) {
-	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{24}
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{29}
 }
 
 func (x *WaveformMetadata) GetSampleCount() uint64 {
@@ -2796,6 +3417,100 @@ func (x *WaveformMetadata) GetDataLengthBytes() uint64 {
 	return 0
 }
 
+// Vendor display coordinates, not calibrated ADC samples. X is the Y array index.
+// Coordinates use a top-left origin; off-screen values are retained for clipping.
+type ScreenTrace struct {
+	state               protoimpl.MessageState `protogen:"open.v1"`
+	Profile             string                 `protobuf:"bytes,1,opt,name=profile,proto3" json:"profile,omitempty"`
+	Width               uint32                 `protobuf:"varint,2,opt,name=width,proto3" json:"width,omitempty"`
+	Height              uint32                 `protobuf:"varint,3,opt,name=height,proto3" json:"height,omitempty"`
+	HorizontalDivisions uint32                 `protobuf:"varint,4,opt,name=horizontal_divisions,json=horizontalDivisions,proto3" json:"horizontal_divisions,omitempty"`
+	VerticalDivisions   uint32                 `protobuf:"varint,5,opt,name=vertical_divisions,json=verticalDivisions,proto3" json:"vertical_divisions,omitempty"`
+	Y                   []int32                `protobuf:"zigzag32,6,rep,packed,name=y,proto3" json:"y,omitempty"`
+	GroundY             int32                  `protobuf:"zigzag32,7,opt,name=ground_y,json=groundY,proto3" json:"ground_y,omitempty"`
+	unknownFields       protoimpl.UnknownFields
+	sizeCache           protoimpl.SizeCache
+}
+
+func (x *ScreenTrace) Reset() {
+	*x = ScreenTrace{}
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[30]
+	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+	ms.StoreMessageInfo(mi)
+}
+
+func (x *ScreenTrace) String() string {
+	return protoimpl.X.MessageStringOf(x)
+}
+
+func (*ScreenTrace) ProtoMessage() {}
+
+func (x *ScreenTrace) ProtoReflect() protoreflect.Message {
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[30]
+	if x != nil {
+		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
+		if ms.LoadMessageInfo() == nil {
+			ms.StoreMessageInfo(mi)
+		}
+		return ms
+	}
+	return mi.MessageOf(x)
+}
+
+// Deprecated: Use ScreenTrace.ProtoReflect.Descriptor instead.
+func (*ScreenTrace) Descriptor() ([]byte, []int) {
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{30}
+}
+
+func (x *ScreenTrace) GetProfile() string {
+	if x != nil {
+		return x.Profile
+	}
+	return ""
+}
+
+func (x *ScreenTrace) GetWidth() uint32 {
+	if x != nil {
+		return x.Width
+	}
+	return 0
+}
+
+func (x *ScreenTrace) GetHeight() uint32 {
+	if x != nil {
+		return x.Height
+	}
+	return 0
+}
+
+func (x *ScreenTrace) GetHorizontalDivisions() uint32 {
+	if x != nil {
+		return x.HorizontalDivisions
+	}
+	return 0
+}
+
+func (x *ScreenTrace) GetVerticalDivisions() uint32 {
+	if x != nil {
+		return x.VerticalDivisions
+	}
+	return 0
+}
+
+func (x *ScreenTrace) GetY() []int32 {
+	if x != nil {
+		return x.Y
+	}
+	return nil
+}
+
+func (x *ScreenTrace) GetGroundY() int32 {
+	if x != nil {
+		return x.GroundY
+	}
+	return 0
+}
+
 type Waveform struct {
 	state            protoimpl.MessageState `protogen:"open.v1"`
 	Channel          Channel                `protobuf:"varint,1,opt,name=channel,proto3,enum=xaionaro.owon.Channel" json:"channel,omitempty"`
@@ -2803,16 +3518,20 @@ type Waveform struct {
 	Encoding         string                 `protobuf:"bytes,3,opt,name=encoding,proto3" json:"encoding,omitempty"`
 	ScreenHeaderJson []byte                 `protobuf:"bytes,4,opt,name=screen_header_json,json=screenHeaderJson,proto3" json:"screen_header_json,omitempty"`
 	// Per-channel capture sequence within one subscription; zero for unary calls.
-	Sequence      uint64                 `protobuf:"varint,5,opt,name=sequence,proto3" json:"sequence,omitempty"`
-	CapturedAt    *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=captured_at,json=capturedAt,proto3" json:"captured_at,omitempty"`
-	Metadata      *WaveformMetadata      `protobuf:"bytes,7,opt,name=metadata,proto3" json:"metadata,omitempty"`
-	unknownFields protoimpl.UnknownFields
-	sizeCache     protoimpl.SizeCache
+	Sequence                     uint64                 `protobuf:"varint,5,opt,name=sequence,proto3" json:"sequence,omitempty"`
+	CapturedAt                   *timestamppb.Timestamp `protobuf:"bytes,6,opt,name=captured_at,json=capturedAt,proto3" json:"captured_at,omitempty"`
+	Metadata                     *WaveformMetadata      `protobuf:"bytes,7,opt,name=metadata,proto3" json:"metadata,omitempty"`
+	ScreenTrace                  *ScreenTrace           `protobuf:"bytes,8,opt,name=screen_trace,json=screenTrace,proto3" json:"screen_trace,omitempty"`
+	ScreenTraceUnavailableReason string                 `protobuf:"bytes,9,opt,name=screen_trace_unavailable_reason,json=screenTraceUnavailableReason,proto3" json:"screen_trace_unavailable_reason,omitempty"`
+	// Host I/O start before HEAD, not a device acquisition timestamp.
+	CaptureStartedAt *timestamppb.Timestamp `protobuf:"bytes,10,opt,name=capture_started_at,json=captureStartedAt,proto3" json:"capture_started_at,omitempty"`
+	unknownFields    protoimpl.UnknownFields
+	sizeCache        protoimpl.SizeCache
 }
 
 func (x *Waveform) Reset() {
 	*x = Waveform{}
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[25]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[31]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2824,7 +3543,7 @@ func (x *Waveform) String() string {
 func (*Waveform) ProtoMessage() {}
 
 func (x *Waveform) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[25]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[31]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2837,7 +3556,7 @@ func (x *Waveform) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Waveform.ProtoReflect.Descriptor instead.
 func (*Waveform) Descriptor() ([]byte, []int) {
-	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{25}
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{31}
 }
 
 func (x *Waveform) GetChannel() Channel {
@@ -2889,6 +3608,27 @@ func (x *Waveform) GetMetadata() *WaveformMetadata {
 	return nil
 }
 
+func (x *Waveform) GetScreenTrace() *ScreenTrace {
+	if x != nil {
+		return x.ScreenTrace
+	}
+	return nil
+}
+
+func (x *Waveform) GetScreenTraceUnavailableReason() string {
+	if x != nil {
+		return x.ScreenTraceUnavailableReason
+	}
+	return ""
+}
+
+func (x *Waveform) GetCaptureStartedAt() *timestamppb.Timestamp {
+	if x != nil {
+		return x.CaptureStartedAt
+	}
+	return nil
+}
+
 type SubscribeRequest struct {
 	state               protoimpl.MessageState `protogen:"open.v1"`
 	Interval            *durationpb.Duration   `protobuf:"bytes,1,opt,name=interval,proto3" json:"interval,omitempty"`
@@ -2904,7 +3644,7 @@ type SubscribeRequest struct {
 
 func (x *SubscribeRequest) Reset() {
 	*x = SubscribeRequest{}
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[26]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[32]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2916,7 +3656,7 @@ func (x *SubscribeRequest) String() string {
 func (*SubscribeRequest) ProtoMessage() {}
 
 func (x *SubscribeRequest) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[26]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[32]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -2929,7 +3669,7 @@ func (x *SubscribeRequest) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use SubscribeRequest.ProtoReflect.Descriptor instead.
 func (*SubscribeRequest) Descriptor() ([]byte, []int) {
-	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{26}
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{32}
 }
 
 func (x *SubscribeRequest) GetInterval() *durationpb.Duration {
@@ -2986,7 +3726,7 @@ type WaveformGap struct {
 
 func (x *WaveformGap) Reset() {
 	*x = WaveformGap{}
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[27]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[33]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -2998,7 +3738,7 @@ func (x *WaveformGap) String() string {
 func (*WaveformGap) ProtoMessage() {}
 
 func (x *WaveformGap) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[27]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[33]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3011,7 +3751,7 @@ func (x *WaveformGap) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use WaveformGap.ProtoReflect.Descriptor instead.
 func (*WaveformGap) Descriptor() ([]byte, []int) {
-	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{27}
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{33}
 }
 
 func (x *WaveformGap) GetChannel() Channel {
@@ -3054,7 +3794,7 @@ type ServiceError struct {
 
 func (x *ServiceError) Reset() {
 	*x = ServiceError{}
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[28]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[34]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3066,7 +3806,7 @@ func (x *ServiceError) String() string {
 func (*ServiceError) ProtoMessage() {}
 
 func (x *ServiceError) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[28]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[34]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3079,7 +3819,7 @@ func (x *ServiceError) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use ServiceError.ProtoReflect.Descriptor instead.
 func (*ServiceError) Descriptor() ([]byte, []int) {
-	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{28}
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{34}
 }
 
 func (x *ServiceError) GetOperation() string {
@@ -3128,7 +3868,7 @@ type Event struct {
 
 func (x *Event) Reset() {
 	*x = Event{}
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[29]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[35]
 	ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 	ms.StoreMessageInfo(mi)
 }
@@ -3140,7 +3880,7 @@ func (x *Event) String() string {
 func (*Event) ProtoMessage() {}
 
 func (x *Event) ProtoReflect() protoreflect.Message {
-	mi := &file_pkg_owonrpc_owon_proto_msgTypes[29]
+	mi := &file_pkg_owonrpc_owon_proto_msgTypes[35]
 	if x != nil {
 		ms := protoimpl.X.MessageStateOf(protoimpl.Pointer(x))
 		if ms.LoadMessageInfo() == nil {
@@ -3153,7 +3893,7 @@ func (x *Event) ProtoReflect() protoreflect.Message {
 
 // Deprecated: Use Event.ProtoReflect.Descriptor instead.
 func (*Event) Descriptor() ([]byte, []int) {
-	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{29}
+	return file_pkg_owonrpc_owon_proto_rawDescGZIP(), []int{35}
 }
 
 func (x *Event) GetTimestamp() *timestamppb.Timestamp {
@@ -3314,14 +4054,15 @@ const file_pkg_owonrpc_owon_proto_rawDesc = "" +
 	"\x0ffalling_seconds\x18\v \x01(\x01R\x0efallingSeconds\x12!\n" +
 	"\fduty_percent\x18\f \x01(\x01R\vdutyPercent\x120\n" +
 	"\x04load\x18\r \x01(\x0e2\x1c.xaionaro.owon.GeneratorLoadR\x04load\x12\x16\n" +
-	"\x06output\x18\x0e \x01(\bR\x06output\"\xee\x01\n" +
+	"\x06output\x18\x0e \x01(\bR\x06output\"\xa0\x02\n" +
 	"\bDmmState\x126\n" +
 	"\bfunction\x18\x01 \x01(\x0e2\x1a.xaionaro.owon.DmmFunctionR\bfunction\x12@\n" +
 	"\fcurrent_type\x18\x02 \x01(\x0e2\x1d.xaionaro.owon.DmmCurrentTypeR\vcurrentType\x12\x1a\n" +
 	"\brelative\x18\x03 \x01(\bR\brelative\x12-\n" +
 	"\x05range\x18\x04 \x01(\x0e2\x17.xaionaro.owon.DmmRangeR\x05range\x12\x1d\n" +
 	"\n" +
-	"auto_range\x18\x05 \x01(\bR\tautoRange\"\xc8\x04\n" +
+	"auto_range\x18\x05 \x01(\bR\tautoRange\x120\n" +
+	"\x14observed_range_token\x18\x06 \x01(\tR\x12observedRangeToken\"\xc8\x04\n" +
 	"\rStateSnapshot\x121\n" +
 	"\x06device\x18\x01 \x01(\v2\x19.xaionaro.owon.DeviceInfoR\x06device\x12>\n" +
 	"\fmeasurements\x18\x02 \x03(\v2\x1a.xaionaro.owon.MeasurementR\fmeasurements\x12,\n" +
@@ -3341,10 +4082,45 @@ const file_pkg_owonrpc_owon_proto_rawDesc = "" +
 	"\acommand\x18\x01 \x01(\tR\acommand\x12@\n" +
 	"\rresponse_mode\x18\x02 \x01(\x0e2\x1b.xaionaro.owon.ResponseModeR\fresponseMode\"%\n" +
 	"\x0fExecuteResponse\x12\x12\n" +
-	"\x04data\x18\x01 \x01(\fR\x04data\"J\n" +
+	"\x04data\x18\x01 \x01(\fR\x04data\"\x91\x01\n" +
 	"\rCommandResult\x129\n" +
 	"\n" +
-	"applied_at\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\tappliedAt\"\xdc\x03\n" +
+	"applied_at\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\tappliedAt\x12E\n" +
+	"\tgenerator\x18\x02 \x01(\v2'.xaionaro.owon.GeneratorOperationResultR\tgenerator\"\xdc\x02\n" +
+	"\x18GeneratorWaveformContext\x12C\n" +
+	"\trequested\x18\x01 \x01(\x0e2 .xaionaro.owon.GeneratorWaveformH\x00R\trequested\x88\x01\x01\x12A\n" +
+	"\bobserved\x18\x02 \x01(\x0e2 .xaionaro.owon.GeneratorWaveformH\x01R\bobserved\x88\x01\x01\x12%\n" +
+	"\x0eobserved_token\x18\x03 \x01(\tR\robservedToken\x12;\n" +
+	"\x05match\x18\x04 \x01(\x0e2%.xaionaro.owon.GeneratorContextStatusR\x05match\x12!\n" +
+	"\fobserved_raw\x18\x05 \x01(\tR\vobservedRaw\x12\x16\n" +
+	"\x06reason\x18\x06 \x01(\tR\x06reasonB\f\n" +
+	"\n" +
+	"_requestedB\v\n" +
+	"\t_observed\"\xc4\x01\n" +
+	"\x1aGeneratorOutputObservation\x12A\n" +
+	"\x06status\x18\x01 \x01(\x0e2).xaionaro.owon.GeneratorObservationStatusR\x06status\x12\x19\n" +
+	"\x05value\x18\x02 \x01(\bH\x00R\x05value\x88\x01\x01\x12\x14\n" +
+	"\x05token\x18\x03 \x01(\tR\x05token\x12\x10\n" +
+	"\x03raw\x18\x04 \x01(\tR\x03raw\x12\x16\n" +
+	"\x06reason\x18\x05 \x01(\tR\x06reasonB\b\n" +
+	"\x06_value\"\xd9\x01\n" +
+	"\x14GeneratorObservation\x12;\n" +
+	"\vcaptured_at\x18\x01 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
+	"capturedAt\x12A\n" +
+	"\acontext\x18\x02 \x01(\v2'.xaionaro.owon.GeneratorWaveformContextR\acontext\x12A\n" +
+	"\x06output\x18\x03 \x01(\v2).xaionaro.owon.GeneratorOutputObservationR\x06output\"\xc6\x01\n" +
+	"\x1bGeneratorOutputCompensation\x12!\n" +
+	"\trequested\x18\x01 \x01(\bH\x00R\trequested\x88\x01\x01\x12\x1f\n" +
+	"\bobserved\x18\x02 \x01(\bH\x01R\bobserved\x88\x01\x01\x12H\n" +
+	"\x06status\x18\x03 \x01(\x0e20.xaionaro.owon.GeneratorOutputCompensationStatusR\x06statusB\f\n" +
+	"\n" +
+	"_requestedB\v\n" +
+	"\t_observed\"\xa0\x02\n" +
+	"\x18GeneratorOperationResult\x12B\n" +
+	"\bdelivery\x18\x01 \x01(\x0e2&.xaionaro.owon.GeneratorDeliveryStatusR\bdelivery\x12E\n" +
+	"\vobservation\x18\x02 \x01(\v2#.xaionaro.owon.GeneratorObservationR\vobservation\x12)\n" +
+	"\x10completed_writes\x18\x03 \x03(\tR\x0fcompletedWrites\x12N\n" +
+	"\fcompensation\x18\x04 \x01(\v2*.xaionaro.owon.GeneratorOutputCompensationR\fcompensation\"\xdc\x03\n" +
 	"\x11SetChannelRequest\x120\n" +
 	"\achannel\x18\x01 \x01(\x0e2\x16.xaionaro.owon.ChannelR\achannel\x12\x1d\n" +
 	"\adisplay\x18\x02 \x01(\bH\x00R\adisplay\x88\x01\x01\x128\n" +
@@ -3393,7 +4169,7 @@ const file_pkg_owonrpc_owon_proto_rawDesc = "" +
 	"\x0freplace_visible\x18\x03 \x01(\bH\x01R\x0ereplaceVisible\x88\x01\x01B\n" +
 	"\n" +
 	"\b_displayB\x12\n" +
-	"\x10_replace_visible\"\xef\x06\n" +
+	"\x10_replace_visible\"\x9a\a\n" +
 	"\x13SetGeneratorRequest\x12A\n" +
 	"\bwaveform\x18\x01 \x01(\x0e2 .xaionaro.owon.GeneratorWaveformH\x00R\bwaveform\x88\x01\x01\x12&\n" +
 	"\ffrequency_hz\x18\x02 \x01(\x01H\x01R\vfrequencyHz\x88\x01\x01\x12*\n" +
@@ -3411,7 +4187,8 @@ const file_pkg_owonrpc_owon_proto_rawDesc = "" +
 	"R\x0efallingSeconds\x88\x01\x01\x12&\n" +
 	"\fduty_percent\x18\f \x01(\x01H\vR\vdutyPercent\x88\x01\x01\x125\n" +
 	"\x04load\x18\r \x01(\x0e2\x1c.xaionaro.owon.GeneratorLoadH\fR\x04load\x88\x01\x01\x12\x1b\n" +
-	"\x06output\x18\x0e \x01(\bH\rR\x06output\x88\x01\x01B\v\n" +
+	"\x06output\x18\x0e \x01(\bH\rR\x06output\x88\x01\x01\x12\x1d\n" +
+	"\aobserve\x18\x0f \x01(\bH\x0eR\aobserve\x88\x01\x01B\v\n" +
 	"\t_waveformB\x0f\n" +
 	"\r_frequency_hzB\x11\n" +
 	"\x0f_period_secondsB\x12\n" +
@@ -3426,7 +4203,9 @@ const file_pkg_owonrpc_owon_proto_rawDesc = "" +
 	"\x10_falling_secondsB\x0f\n" +
 	"\r_duty_percentB\a\n" +
 	"\x05_loadB\t\n" +
-	"\a_output\"\xd0\x02\n" +
+	"\a_outputB\n" +
+	"\n" +
+	"\b_observe\"\xd0\x02\n" +
 	"\rSetDmmRequest\x12;\n" +
 	"\bfunction\x18\x01 \x01(\x0e2\x1a.xaionaro.owon.DmmFunctionH\x00R\bfunction\x88\x01\x01\x12E\n" +
 	"\fcurrent_type\x18\x02 \x01(\x0e2\x1d.xaionaro.owon.DmmCurrentTypeH\x01R\vcurrentType\x88\x01\x01\x12\x1f\n" +
@@ -3463,7 +4242,15 @@ const file_pkg_owonrpc_owon_proto_rawDesc = "" +
 	"\x11_x_origin_secondsB\x16\n" +
 	"\x14_x_increment_secondsB\x11\n" +
 	"\x0f_y_origin_voltsB\x14\n" +
-	"\x12_y_increment_volts\"\xb0\x02\n" +
+	"\x12_y_increment_volts\"\xe0\x01\n" +
+	"\vScreenTrace\x12\x18\n" +
+	"\aprofile\x18\x01 \x01(\tR\aprofile\x12\x14\n" +
+	"\x05width\x18\x02 \x01(\rR\x05width\x12\x16\n" +
+	"\x06height\x18\x03 \x01(\rR\x06height\x121\n" +
+	"\x14horizontal_divisions\x18\x04 \x01(\rR\x13horizontalDivisions\x12-\n" +
+	"\x12vertical_divisions\x18\x05 \x01(\rR\x11verticalDivisions\x12\f\n" +
+	"\x01y\x18\x06 \x03(\x11R\x01y\x12\x19\n" +
+	"\bground_y\x18\a \x01(\x11R\agroundY\"\x80\x04\n" +
 	"\bWaveform\x120\n" +
 	"\achannel\x18\x01 \x01(\x0e2\x16.xaionaro.owon.ChannelR\achannel\x12\x12\n" +
 	"\x04data\x18\x02 \x01(\fR\x04data\x12\x1a\n" +
@@ -3472,7 +4259,11 @@ const file_pkg_owonrpc_owon_proto_rawDesc = "" +
 	"\bsequence\x18\x05 \x01(\x04R\bsequence\x12;\n" +
 	"\vcaptured_at\x18\x06 \x01(\v2\x1a.google.protobuf.TimestampR\n" +
 	"capturedAt\x12;\n" +
-	"\bmetadata\x18\a \x01(\v2\x1f.xaionaro.owon.WaveformMetadataR\bmetadata\"\xdc\x02\n" +
+	"\bmetadata\x18\a \x01(\v2\x1f.xaionaro.owon.WaveformMetadataR\bmetadata\x12=\n" +
+	"\fscreen_trace\x18\b \x01(\v2\x1a.xaionaro.owon.ScreenTraceR\vscreenTrace\x12E\n" +
+	"\x1fscreen_trace_unavailable_reason\x18\t \x01(\tR\x1cscreenTraceUnavailableReason\x12H\n" +
+	"\x12capture_started_at\x18\n" +
+	" \x01(\v2\x1a.google.protobuf.TimestampR\x10captureStartedAt\"\xdc\x02\n" +
 	"\x10SubscribeRequest\x125\n" +
 	"\binterval\x18\x01 \x01(\v2\x19.google.protobuf.DurationR\binterval\x12F\n" +
 	"\fmeasurements\x18\x02 \x03(\v2\".xaionaro.owon.MeasurementSelectorR\fmeasurements\x12C\n" +
@@ -3544,13 +4335,22 @@ const file_pkg_owonrpc_owon_proto_rawDesc = "" +
 	"\x1aMEASUREMENT_KIND_AMPLITUDE\x10\x05\x12\x1c\n" +
 	"\x18MEASUREMENT_KIND_AVERAGE\x10\x06\x12\x1b\n" +
 	"\x17MEASUREMENT_KIND_PERIOD\x10\a\x12\x1e\n" +
-	"\x1aMEASUREMENT_KIND_FREQUENCY\x10\b*\xae\x01\n" +
+	"\x1aMEASUREMENT_KIND_FREQUENCY\x10\b*\xb7\x03\n" +
 	"\x11GeneratorWaveform\x12\"\n" +
 	"\x1eGENERATOR_WAVEFORM_UNSPECIFIED\x10\x00\x12\x1b\n" +
 	"\x17GENERATOR_WAVEFORM_SINE\x10\x01\x12\x1d\n" +
 	"\x19GENERATOR_WAVEFORM_SQUARE\x10\x02\x12\x1b\n" +
 	"\x17GENERATOR_WAVEFORM_RAMP\x10\x03\x12\x1c\n" +
-	"\x18GENERATOR_WAVEFORM_PULSE\x10\x04*\xcf\x01\n" +
+	"\x18GENERATOR_WAVEFORM_PULSE\x10\x04\x12\x1e\n" +
+	"\x1aGENERATOR_WAVEFORM_AMP_ALT\x10\x05\x12\x1e\n" +
+	"\x1aGENERATOR_WAVEFORM_ATT_ALT\x10\x06\x12!\n" +
+	"\x1dGENERATOR_WAVEFORM_STAIR_DOWN\x10\a\x12$\n" +
+	" GENERATOR_WAVEFORM_STAIR_UP_DOWN\x10\b\x12\x1f\n" +
+	"\x1bGENERATOR_WAVEFORM_STAIR_UP\x10\t\x12\x1f\n" +
+	"\x1bGENERATOR_WAVEFORM_BESSEL_J\x10\n" +
+	"\x12\x1f\n" +
+	"\x1bGENERATOR_WAVEFORM_BESSEL_Y\x10\v\x12\x1b\n" +
+	"\x17GENERATOR_WAVEFORM_SINC\x10\f*\xcf\x01\n" +
 	"\vDmmFunction\x12\x1c\n" +
 	"\x18DMM_FUNCTION_UNSPECIFIED\x10\x00\x12\x18\n" +
 	"\x14DMM_FUNCTION_VOLTAGE\x10\x01\x12\x18\n" +
@@ -3562,7 +4362,30 @@ const file_pkg_owonrpc_owon_proto_rawDesc = "" +
 	"\rGeneratorLoad\x12\x1e\n" +
 	"\x1aGENERATOR_LOAD_UNSPECIFIED\x10\x00\x12\x15\n" +
 	"\x11GENERATOR_LOAD_ON\x10\x01\x12\x16\n" +
-	"\x12GENERATOR_LOAD_OFF\x10\x02*Z\n" +
+	"\x12GENERATOR_LOAD_OFF\x10\x02*\xfc\x01\n" +
+	"\x1aGeneratorObservationStatus\x12%\n" +
+	"!GENERATOR_OBSERVATION_UNSPECIFIED\x10\x00\x12\"\n" +
+	"\x1eGENERATOR_OBSERVATION_OBSERVED\x10\x01\x12$\n" +
+	" GENERATOR_OBSERVATION_UNVERIFIED\x10\x02\x12%\n" +
+	"!GENERATOR_OBSERVATION_UNAVAILABLE\x10\x03\x12#\n" +
+	"\x1fGENERATOR_OBSERVATION_MALFORMED\x10\x04\x12!\n" +
+	"\x1dGENERATOR_OBSERVATION_UNKNOWN\x10\x05*\x97\x01\n" +
+	"\x16GeneratorContextStatus\x12!\n" +
+	"\x1dGENERATOR_CONTEXT_UNSPECIFIED\x10\x00\x12\x1b\n" +
+	"\x17GENERATOR_CONTEXT_MATCH\x10\x01\x12\x1e\n" +
+	"\x1aGENERATOR_CONTEXT_MISMATCH\x10\x02\x12\x1d\n" +
+	"\x19GENERATOR_CONTEXT_UNKNOWN\x10\x03*\xe6\x01\n" +
+	"\x17GeneratorDeliveryStatus\x12$\n" +
+	" GENERATOR_DELIVERY_NOT_ATTEMPTED\x10\x00\x12;\n" +
+	"7GENERATOR_DELIVERY_TRANSPORT_COMPLETE_READBACK_VERIFIED\x10\x01\x12=\n" +
+	"9GENERATOR_DELIVERY_TRANSPORT_COMPLETE_READBACK_UNVERIFIED\x10\x02\x12)\n" +
+	"%GENERATOR_DELIVERY_PARTIAL_OR_UNKNOWN\x10\x03*\x88\x02\n" +
+	"!GeneratorOutputCompensationStatus\x12/\n" +
+	"+GENERATOR_OUTPUT_COMPENSATION_NOT_ATTEMPTED\x10\x00\x12.\n" +
+	"*GENERATOR_OUTPUT_COMPENSATION_NOT_REQUIRED\x10\x01\x12*\n" +
+	"&GENERATOR_OUTPUT_COMPENSATION_VERIFIED\x10\x02\x12,\n" +
+	"(GENERATOR_OUTPUT_COMPENSATION_UNVERIFIED\x10\x03\x12(\n" +
+	"$GENERATOR_OUTPUT_COMPENSATION_FAILED\x10\x04*Z\n" +
 	"\bDmmRange\x12\x19\n" +
 	"\x15DMM_RANGE_UNSPECIFIED\x10\x00\x12\x10\n" +
 	"\fDMM_RANGE_ON\x10\x01\x12\x10\n" +
@@ -3585,7 +4408,7 @@ const file_pkg_owonrpc_owon_proto_rawDesc = "" +
 	"\"SERVICE_ERROR_CATEGORY_UNSUPPORTED\x10\x02\x12-\n" +
 	")SERVICE_ERROR_CATEGORY_DEVICE_UNAVAILABLE\x10\x03\x12#\n" +
 	"\x1fSERVICE_ERROR_CATEGORY_PROTOCOL\x10\x04\x12'\n" +
-	"#SERVICE_ERROR_CATEGORY_BACKPRESSURE\x10\x052\xb1\t\n" +
+	"#SERVICE_ERROR_CATEGORY_BACKPRESSURE\x10\x052\xef\t\n" +
 	"\vOwonService\x12B\n" +
 	"\rGetDeviceInfo\x12\x16.google.protobuf.Empty\x1a\x19.xaionaro.owon.DeviceInfo\x12H\n" +
 	"\bGetState\x12\x1e.xaionaro.owon.GetStateRequest\x1a\x1c.xaionaro.owon.StateSnapshot\x12H\n" +
@@ -3602,7 +4425,8 @@ const file_pkg_owonrpc_owon_proto_rawDesc = "" +
 	"\x11GetDmmMeasurement\x12\x16.google.protobuf.Empty\x1a\x1d.xaionaro.owon.DmmMeasurement\x12;\n" +
 	"\x03Run\x12\x16.google.protobuf.Empty\x1a\x1c.xaionaro.owon.CommandResult\x12<\n" +
 	"\x04Stop\x12\x16.google.protobuf.Empty\x1a\x1c.xaionaro.owon.CommandResult\x12>\n" +
-	"\x06Single\x12\x16.google.protobuf.Empty\x1a\x1c.xaionaro.owon.CommandResult\x12I\n" +
+	"\x06Single\x12\x16.google.protobuf.Empty\x1a\x1c.xaionaro.owon.CommandResult\x12<\n" +
+	"\x04Auto\x12\x16.google.protobuf.Empty\x1a\x1c.xaionaro.owon.CommandResult\x12I\n" +
 	"\vGetWaveform\x12!.xaionaro.owon.GetWaveformRequest\x1a\x17.xaionaro.owon.Waveform\x12D\n" +
 	"\tSubscribe\x12\x1f.xaionaro.owon.SubscribeRequest\x1a\x14.xaionaro.owon.Event0\x01B7Z5github.com/xaionaro-go/owon/pkg/owonrpc/autogeneratedb\x06proto3"
 
@@ -3618,62 +4442,72 @@ func file_pkg_owonrpc_owon_proto_rawDescGZIP() []byte {
 	return file_pkg_owonrpc_owon_proto_rawDescData
 }
 
-var file_pkg_owonrpc_owon_proto_enumTypes = make([]protoimpl.EnumInfo, 16)
-var file_pkg_owonrpc_owon_proto_msgTypes = make([]protoimpl.MessageInfo, 30)
+var file_pkg_owonrpc_owon_proto_enumTypes = make([]protoimpl.EnumInfo, 20)
+var file_pkg_owonrpc_owon_proto_msgTypes = make([]protoimpl.MessageInfo, 36)
 var file_pkg_owonrpc_owon_proto_goTypes = []any{
-	(Channel)(0),                  // 0: xaionaro.owon.Channel
-	(ResponseMode)(0),             // 1: xaionaro.owon.ResponseMode
-	(Coupling)(0),                 // 2: xaionaro.owon.Coupling
-	(AcquisitionMode)(0),          // 3: xaionaro.owon.AcquisitionMode
-	(AcquisitionMemoryDepth)(0),   // 4: xaionaro.owon.AcquisitionMemoryDepth
-	(TriggerSource)(0),            // 5: xaionaro.owon.TriggerSource
-	(TriggerSlope)(0),             // 6: xaionaro.owon.TriggerSlope
-	(TriggerSweep)(0),             // 7: xaionaro.owon.TriggerSweep
-	(MeasurementKind)(0),          // 8: xaionaro.owon.MeasurementKind
-	(GeneratorWaveform)(0),        // 9: xaionaro.owon.GeneratorWaveform
-	(DmmFunction)(0),              // 10: xaionaro.owon.DmmFunction
-	(GeneratorLoad)(0),            // 11: xaionaro.owon.GeneratorLoad
-	(DmmRange)(0),                 // 12: xaionaro.owon.DmmRange
-	(DmmCurrentType)(0),           // 13: xaionaro.owon.DmmCurrentType
-	(Capability)(0),               // 14: xaionaro.owon.Capability
-	(ServiceErrorCategory)(0),     // 15: xaionaro.owon.ServiceErrorCategory
-	(*DeviceSelector)(nil),        // 16: xaionaro.owon.DeviceSelector
-	(*DeviceInfo)(nil),            // 17: xaionaro.owon.DeviceInfo
-	(*GetStateRequest)(nil),       // 18: xaionaro.owon.GetStateRequest
-	(*MeasurementSelector)(nil),   // 19: xaionaro.owon.MeasurementSelector
-	(*Measurement)(nil),           // 20: xaionaro.owon.Measurement
-	(*ChannelState)(nil),          // 21: xaionaro.owon.ChannelState
-	(*AcquisitionState)(nil),      // 22: xaionaro.owon.AcquisitionState
-	(*HorizontalState)(nil),       // 23: xaionaro.owon.HorizontalState
-	(*TriggerState)(nil),          // 24: xaionaro.owon.TriggerState
-	(*GeneratorState)(nil),        // 25: xaionaro.owon.GeneratorState
-	(*DmmState)(nil),              // 26: xaionaro.owon.DmmState
-	(*StateSnapshot)(nil),         // 27: xaionaro.owon.StateSnapshot
-	(*ExecuteRequest)(nil),        // 28: xaionaro.owon.ExecuteRequest
-	(*ExecuteResponse)(nil),       // 29: xaionaro.owon.ExecuteResponse
-	(*CommandResult)(nil),         // 30: xaionaro.owon.CommandResult
-	(*SetChannelRequest)(nil),     // 31: xaionaro.owon.SetChannelRequest
-	(*SetAcquisitionRequest)(nil), // 32: xaionaro.owon.SetAcquisitionRequest
-	(*SetHorizontalRequest)(nil),  // 33: xaionaro.owon.SetHorizontalRequest
-	(*SetTriggerRequest)(nil),     // 34: xaionaro.owon.SetTriggerRequest
-	(*SetMeasurementRequest)(nil), // 35: xaionaro.owon.SetMeasurementRequest
-	(*SetGeneratorRequest)(nil),   // 36: xaionaro.owon.SetGeneratorRequest
-	(*SetDmmRequest)(nil),         // 37: xaionaro.owon.SetDmmRequest
-	(*DmmMeasurement)(nil),        // 38: xaionaro.owon.DmmMeasurement
-	(*GetWaveformRequest)(nil),    // 39: xaionaro.owon.GetWaveformRequest
-	(*WaveformMetadata)(nil),      // 40: xaionaro.owon.WaveformMetadata
-	(*Waveform)(nil),              // 41: xaionaro.owon.Waveform
-	(*SubscribeRequest)(nil),      // 42: xaionaro.owon.SubscribeRequest
-	(*WaveformGap)(nil),           // 43: xaionaro.owon.WaveformGap
-	(*ServiceError)(nil),          // 44: xaionaro.owon.ServiceError
-	(*Event)(nil),                 // 45: xaionaro.owon.Event
-	(*timestamppb.Timestamp)(nil), // 46: google.protobuf.Timestamp
-	(*durationpb.Duration)(nil),   // 47: google.protobuf.Duration
-	(*emptypb.Empty)(nil),         // 48: google.protobuf.Empty
+	(Channel)(0),                           // 0: xaionaro.owon.Channel
+	(ResponseMode)(0),                      // 1: xaionaro.owon.ResponseMode
+	(Coupling)(0),                          // 2: xaionaro.owon.Coupling
+	(AcquisitionMode)(0),                   // 3: xaionaro.owon.AcquisitionMode
+	(AcquisitionMemoryDepth)(0),            // 4: xaionaro.owon.AcquisitionMemoryDepth
+	(TriggerSource)(0),                     // 5: xaionaro.owon.TriggerSource
+	(TriggerSlope)(0),                      // 6: xaionaro.owon.TriggerSlope
+	(TriggerSweep)(0),                      // 7: xaionaro.owon.TriggerSweep
+	(MeasurementKind)(0),                   // 8: xaionaro.owon.MeasurementKind
+	(GeneratorWaveform)(0),                 // 9: xaionaro.owon.GeneratorWaveform
+	(DmmFunction)(0),                       // 10: xaionaro.owon.DmmFunction
+	(GeneratorLoad)(0),                     // 11: xaionaro.owon.GeneratorLoad
+	(GeneratorObservationStatus)(0),        // 12: xaionaro.owon.GeneratorObservationStatus
+	(GeneratorContextStatus)(0),            // 13: xaionaro.owon.GeneratorContextStatus
+	(GeneratorDeliveryStatus)(0),           // 14: xaionaro.owon.GeneratorDeliveryStatus
+	(GeneratorOutputCompensationStatus)(0), // 15: xaionaro.owon.GeneratorOutputCompensationStatus
+	(DmmRange)(0),                          // 16: xaionaro.owon.DmmRange
+	(DmmCurrentType)(0),                    // 17: xaionaro.owon.DmmCurrentType
+	(Capability)(0),                        // 18: xaionaro.owon.Capability
+	(ServiceErrorCategory)(0),              // 19: xaionaro.owon.ServiceErrorCategory
+	(*DeviceSelector)(nil),                 // 20: xaionaro.owon.DeviceSelector
+	(*DeviceInfo)(nil),                     // 21: xaionaro.owon.DeviceInfo
+	(*GetStateRequest)(nil),                // 22: xaionaro.owon.GetStateRequest
+	(*MeasurementSelector)(nil),            // 23: xaionaro.owon.MeasurementSelector
+	(*Measurement)(nil),                    // 24: xaionaro.owon.Measurement
+	(*ChannelState)(nil),                   // 25: xaionaro.owon.ChannelState
+	(*AcquisitionState)(nil),               // 26: xaionaro.owon.AcquisitionState
+	(*HorizontalState)(nil),                // 27: xaionaro.owon.HorizontalState
+	(*TriggerState)(nil),                   // 28: xaionaro.owon.TriggerState
+	(*GeneratorState)(nil),                 // 29: xaionaro.owon.GeneratorState
+	(*DmmState)(nil),                       // 30: xaionaro.owon.DmmState
+	(*StateSnapshot)(nil),                  // 31: xaionaro.owon.StateSnapshot
+	(*ExecuteRequest)(nil),                 // 32: xaionaro.owon.ExecuteRequest
+	(*ExecuteResponse)(nil),                // 33: xaionaro.owon.ExecuteResponse
+	(*CommandResult)(nil),                  // 34: xaionaro.owon.CommandResult
+	(*GeneratorWaveformContext)(nil),       // 35: xaionaro.owon.GeneratorWaveformContext
+	(*GeneratorOutputObservation)(nil),     // 36: xaionaro.owon.GeneratorOutputObservation
+	(*GeneratorObservation)(nil),           // 37: xaionaro.owon.GeneratorObservation
+	(*GeneratorOutputCompensation)(nil),    // 38: xaionaro.owon.GeneratorOutputCompensation
+	(*GeneratorOperationResult)(nil),       // 39: xaionaro.owon.GeneratorOperationResult
+	(*SetChannelRequest)(nil),              // 40: xaionaro.owon.SetChannelRequest
+	(*SetAcquisitionRequest)(nil),          // 41: xaionaro.owon.SetAcquisitionRequest
+	(*SetHorizontalRequest)(nil),           // 42: xaionaro.owon.SetHorizontalRequest
+	(*SetTriggerRequest)(nil),              // 43: xaionaro.owon.SetTriggerRequest
+	(*SetMeasurementRequest)(nil),          // 44: xaionaro.owon.SetMeasurementRequest
+	(*SetGeneratorRequest)(nil),            // 45: xaionaro.owon.SetGeneratorRequest
+	(*SetDmmRequest)(nil),                  // 46: xaionaro.owon.SetDmmRequest
+	(*DmmMeasurement)(nil),                 // 47: xaionaro.owon.DmmMeasurement
+	(*GetWaveformRequest)(nil),             // 48: xaionaro.owon.GetWaveformRequest
+	(*WaveformMetadata)(nil),               // 49: xaionaro.owon.WaveformMetadata
+	(*ScreenTrace)(nil),                    // 50: xaionaro.owon.ScreenTrace
+	(*Waveform)(nil),                       // 51: xaionaro.owon.Waveform
+	(*SubscribeRequest)(nil),               // 52: xaionaro.owon.SubscribeRequest
+	(*WaveformGap)(nil),                    // 53: xaionaro.owon.WaveformGap
+	(*ServiceError)(nil),                   // 54: xaionaro.owon.ServiceError
+	(*Event)(nil),                          // 55: xaionaro.owon.Event
+	(*timestamppb.Timestamp)(nil),          // 56: google.protobuf.Timestamp
+	(*durationpb.Duration)(nil),            // 57: google.protobuf.Duration
+	(*emptypb.Empty)(nil),                  // 58: google.protobuf.Empty
 }
 var file_pkg_owonrpc_owon_proto_depIdxs = []int32{
-	14, // 0: xaionaro.owon.DeviceInfo.capabilities:type_name -> xaionaro.owon.Capability
-	19, // 1: xaionaro.owon.GetStateRequest.measurements:type_name -> xaionaro.owon.MeasurementSelector
+	18, // 0: xaionaro.owon.DeviceInfo.capabilities:type_name -> xaionaro.owon.Capability
+	23, // 1: xaionaro.owon.GetStateRequest.measurements:type_name -> xaionaro.owon.MeasurementSelector
 	0,  // 2: xaionaro.owon.MeasurementSelector.channel:type_name -> xaionaro.owon.Channel
 	8,  // 3: xaionaro.owon.MeasurementSelector.kind:type_name -> xaionaro.owon.MeasurementKind
 	0,  // 4: xaionaro.owon.Measurement.channel:type_name -> xaionaro.owon.Channel
@@ -3688,86 +4522,102 @@ var file_pkg_owonrpc_owon_proto_depIdxs = []int32{
 	9,  // 13: xaionaro.owon.GeneratorState.waveform:type_name -> xaionaro.owon.GeneratorWaveform
 	11, // 14: xaionaro.owon.GeneratorState.load:type_name -> xaionaro.owon.GeneratorLoad
 	10, // 15: xaionaro.owon.DmmState.function:type_name -> xaionaro.owon.DmmFunction
-	13, // 16: xaionaro.owon.DmmState.current_type:type_name -> xaionaro.owon.DmmCurrentType
-	12, // 17: xaionaro.owon.DmmState.range:type_name -> xaionaro.owon.DmmRange
-	17, // 18: xaionaro.owon.StateSnapshot.device:type_name -> xaionaro.owon.DeviceInfo
-	20, // 19: xaionaro.owon.StateSnapshot.measurements:type_name -> xaionaro.owon.Measurement
-	46, // 20: xaionaro.owon.StateSnapshot.captured_at:type_name -> google.protobuf.Timestamp
-	21, // 21: xaionaro.owon.StateSnapshot.channels:type_name -> xaionaro.owon.ChannelState
-	22, // 22: xaionaro.owon.StateSnapshot.acquisition:type_name -> xaionaro.owon.AcquisitionState
-	23, // 23: xaionaro.owon.StateSnapshot.horizontal:type_name -> xaionaro.owon.HorizontalState
-	24, // 24: xaionaro.owon.StateSnapshot.trigger:type_name -> xaionaro.owon.TriggerState
-	25, // 25: xaionaro.owon.StateSnapshot.generator:type_name -> xaionaro.owon.GeneratorState
-	26, // 26: xaionaro.owon.StateSnapshot.dmm:type_name -> xaionaro.owon.DmmState
+	17, // 16: xaionaro.owon.DmmState.current_type:type_name -> xaionaro.owon.DmmCurrentType
+	16, // 17: xaionaro.owon.DmmState.range:type_name -> xaionaro.owon.DmmRange
+	21, // 18: xaionaro.owon.StateSnapshot.device:type_name -> xaionaro.owon.DeviceInfo
+	24, // 19: xaionaro.owon.StateSnapshot.measurements:type_name -> xaionaro.owon.Measurement
+	56, // 20: xaionaro.owon.StateSnapshot.captured_at:type_name -> google.protobuf.Timestamp
+	25, // 21: xaionaro.owon.StateSnapshot.channels:type_name -> xaionaro.owon.ChannelState
+	26, // 22: xaionaro.owon.StateSnapshot.acquisition:type_name -> xaionaro.owon.AcquisitionState
+	27, // 23: xaionaro.owon.StateSnapshot.horizontal:type_name -> xaionaro.owon.HorizontalState
+	28, // 24: xaionaro.owon.StateSnapshot.trigger:type_name -> xaionaro.owon.TriggerState
+	29, // 25: xaionaro.owon.StateSnapshot.generator:type_name -> xaionaro.owon.GeneratorState
+	30, // 26: xaionaro.owon.StateSnapshot.dmm:type_name -> xaionaro.owon.DmmState
 	1,  // 27: xaionaro.owon.ExecuteRequest.response_mode:type_name -> xaionaro.owon.ResponseMode
-	46, // 28: xaionaro.owon.CommandResult.applied_at:type_name -> google.protobuf.Timestamp
-	0,  // 29: xaionaro.owon.SetChannelRequest.channel:type_name -> xaionaro.owon.Channel
-	2,  // 30: xaionaro.owon.SetChannelRequest.coupling:type_name -> xaionaro.owon.Coupling
-	3,  // 31: xaionaro.owon.SetAcquisitionRequest.mode:type_name -> xaionaro.owon.AcquisitionMode
-	4,  // 32: xaionaro.owon.SetAcquisitionRequest.memory_depth:type_name -> xaionaro.owon.AcquisitionMemoryDepth
-	5,  // 33: xaionaro.owon.SetTriggerRequest.source:type_name -> xaionaro.owon.TriggerSource
-	2,  // 34: xaionaro.owon.SetTriggerRequest.coupling:type_name -> xaionaro.owon.Coupling
-	6,  // 35: xaionaro.owon.SetTriggerRequest.slope:type_name -> xaionaro.owon.TriggerSlope
-	7,  // 36: xaionaro.owon.SetTriggerRequest.sweep:type_name -> xaionaro.owon.TriggerSweep
-	19, // 37: xaionaro.owon.SetMeasurementRequest.visible:type_name -> xaionaro.owon.MeasurementSelector
-	9,  // 38: xaionaro.owon.SetGeneratorRequest.waveform:type_name -> xaionaro.owon.GeneratorWaveform
-	11, // 39: xaionaro.owon.SetGeneratorRequest.load:type_name -> xaionaro.owon.GeneratorLoad
-	10, // 40: xaionaro.owon.SetDmmRequest.function:type_name -> xaionaro.owon.DmmFunction
-	13, // 41: xaionaro.owon.SetDmmRequest.current_type:type_name -> xaionaro.owon.DmmCurrentType
-	12, // 42: xaionaro.owon.SetDmmRequest.range:type_name -> xaionaro.owon.DmmRange
-	10, // 43: xaionaro.owon.DmmMeasurement.function:type_name -> xaionaro.owon.DmmFunction
-	46, // 44: xaionaro.owon.DmmMeasurement.captured_at:type_name -> google.protobuf.Timestamp
-	0,  // 45: xaionaro.owon.GetWaveformRequest.channel:type_name -> xaionaro.owon.Channel
-	0,  // 46: xaionaro.owon.Waveform.channel:type_name -> xaionaro.owon.Channel
-	46, // 47: xaionaro.owon.Waveform.captured_at:type_name -> google.protobuf.Timestamp
-	40, // 48: xaionaro.owon.Waveform.metadata:type_name -> xaionaro.owon.WaveformMetadata
-	47, // 49: xaionaro.owon.SubscribeRequest.interval:type_name -> google.protobuf.Duration
-	19, // 50: xaionaro.owon.SubscribeRequest.measurements:type_name -> xaionaro.owon.MeasurementSelector
-	0,  // 51: xaionaro.owon.SubscribeRequest.waveform_channels:type_name -> xaionaro.owon.Channel
-	0,  // 52: xaionaro.owon.WaveformGap.channel:type_name -> xaionaro.owon.Channel
-	15, // 53: xaionaro.owon.ServiceError.category:type_name -> xaionaro.owon.ServiceErrorCategory
-	46, // 54: xaionaro.owon.Event.timestamp:type_name -> google.protobuf.Timestamp
-	27, // 55: xaionaro.owon.Event.state:type_name -> xaionaro.owon.StateSnapshot
-	41, // 56: xaionaro.owon.Event.waveform:type_name -> xaionaro.owon.Waveform
-	43, // 57: xaionaro.owon.Event.waveform_gap:type_name -> xaionaro.owon.WaveformGap
-	44, // 58: xaionaro.owon.Event.error:type_name -> xaionaro.owon.ServiceError
-	48, // 59: xaionaro.owon.OwonService.GetDeviceInfo:input_type -> google.protobuf.Empty
-	18, // 60: xaionaro.owon.OwonService.GetState:input_type -> xaionaro.owon.GetStateRequest
-	28, // 61: xaionaro.owon.OwonService.Execute:input_type -> xaionaro.owon.ExecuteRequest
-	31, // 62: xaionaro.owon.OwonService.SetChannel:input_type -> xaionaro.owon.SetChannelRequest
-	32, // 63: xaionaro.owon.OwonService.SetAcquisition:input_type -> xaionaro.owon.SetAcquisitionRequest
-	33, // 64: xaionaro.owon.OwonService.SetHorizontal:input_type -> xaionaro.owon.SetHorizontalRequest
-	34, // 65: xaionaro.owon.OwonService.SetTrigger:input_type -> xaionaro.owon.SetTriggerRequest
-	35, // 66: xaionaro.owon.OwonService.SetMeasurement:input_type -> xaionaro.owon.SetMeasurementRequest
-	36, // 67: xaionaro.owon.OwonService.SetGenerator:input_type -> xaionaro.owon.SetGeneratorRequest
-	37, // 68: xaionaro.owon.OwonService.SetDmm:input_type -> xaionaro.owon.SetDmmRequest
-	48, // 69: xaionaro.owon.OwonService.GetDmmMeasurement:input_type -> google.protobuf.Empty
-	48, // 70: xaionaro.owon.OwonService.Run:input_type -> google.protobuf.Empty
-	48, // 71: xaionaro.owon.OwonService.Stop:input_type -> google.protobuf.Empty
-	48, // 72: xaionaro.owon.OwonService.Single:input_type -> google.protobuf.Empty
-	39, // 73: xaionaro.owon.OwonService.GetWaveform:input_type -> xaionaro.owon.GetWaveformRequest
-	42, // 74: xaionaro.owon.OwonService.Subscribe:input_type -> xaionaro.owon.SubscribeRequest
-	17, // 75: xaionaro.owon.OwonService.GetDeviceInfo:output_type -> xaionaro.owon.DeviceInfo
-	27, // 76: xaionaro.owon.OwonService.GetState:output_type -> xaionaro.owon.StateSnapshot
-	29, // 77: xaionaro.owon.OwonService.Execute:output_type -> xaionaro.owon.ExecuteResponse
-	30, // 78: xaionaro.owon.OwonService.SetChannel:output_type -> xaionaro.owon.CommandResult
-	30, // 79: xaionaro.owon.OwonService.SetAcquisition:output_type -> xaionaro.owon.CommandResult
-	30, // 80: xaionaro.owon.OwonService.SetHorizontal:output_type -> xaionaro.owon.CommandResult
-	30, // 81: xaionaro.owon.OwonService.SetTrigger:output_type -> xaionaro.owon.CommandResult
-	30, // 82: xaionaro.owon.OwonService.SetMeasurement:output_type -> xaionaro.owon.CommandResult
-	30, // 83: xaionaro.owon.OwonService.SetGenerator:output_type -> xaionaro.owon.CommandResult
-	30, // 84: xaionaro.owon.OwonService.SetDmm:output_type -> xaionaro.owon.CommandResult
-	38, // 85: xaionaro.owon.OwonService.GetDmmMeasurement:output_type -> xaionaro.owon.DmmMeasurement
-	30, // 86: xaionaro.owon.OwonService.Run:output_type -> xaionaro.owon.CommandResult
-	30, // 87: xaionaro.owon.OwonService.Stop:output_type -> xaionaro.owon.CommandResult
-	30, // 88: xaionaro.owon.OwonService.Single:output_type -> xaionaro.owon.CommandResult
-	41, // 89: xaionaro.owon.OwonService.GetWaveform:output_type -> xaionaro.owon.Waveform
-	45, // 90: xaionaro.owon.OwonService.Subscribe:output_type -> xaionaro.owon.Event
-	75, // [75:91] is the sub-list for method output_type
-	59, // [59:75] is the sub-list for method input_type
-	59, // [59:59] is the sub-list for extension type_name
-	59, // [59:59] is the sub-list for extension extendee
-	0,  // [0:59] is the sub-list for field type_name
+	56, // 28: xaionaro.owon.CommandResult.applied_at:type_name -> google.protobuf.Timestamp
+	39, // 29: xaionaro.owon.CommandResult.generator:type_name -> xaionaro.owon.GeneratorOperationResult
+	9,  // 30: xaionaro.owon.GeneratorWaveformContext.requested:type_name -> xaionaro.owon.GeneratorWaveform
+	9,  // 31: xaionaro.owon.GeneratorWaveformContext.observed:type_name -> xaionaro.owon.GeneratorWaveform
+	13, // 32: xaionaro.owon.GeneratorWaveformContext.match:type_name -> xaionaro.owon.GeneratorContextStatus
+	12, // 33: xaionaro.owon.GeneratorOutputObservation.status:type_name -> xaionaro.owon.GeneratorObservationStatus
+	56, // 34: xaionaro.owon.GeneratorObservation.captured_at:type_name -> google.protobuf.Timestamp
+	35, // 35: xaionaro.owon.GeneratorObservation.context:type_name -> xaionaro.owon.GeneratorWaveformContext
+	36, // 36: xaionaro.owon.GeneratorObservation.output:type_name -> xaionaro.owon.GeneratorOutputObservation
+	15, // 37: xaionaro.owon.GeneratorOutputCompensation.status:type_name -> xaionaro.owon.GeneratorOutputCompensationStatus
+	14, // 38: xaionaro.owon.GeneratorOperationResult.delivery:type_name -> xaionaro.owon.GeneratorDeliveryStatus
+	37, // 39: xaionaro.owon.GeneratorOperationResult.observation:type_name -> xaionaro.owon.GeneratorObservation
+	38, // 40: xaionaro.owon.GeneratorOperationResult.compensation:type_name -> xaionaro.owon.GeneratorOutputCompensation
+	0,  // 41: xaionaro.owon.SetChannelRequest.channel:type_name -> xaionaro.owon.Channel
+	2,  // 42: xaionaro.owon.SetChannelRequest.coupling:type_name -> xaionaro.owon.Coupling
+	3,  // 43: xaionaro.owon.SetAcquisitionRequest.mode:type_name -> xaionaro.owon.AcquisitionMode
+	4,  // 44: xaionaro.owon.SetAcquisitionRequest.memory_depth:type_name -> xaionaro.owon.AcquisitionMemoryDepth
+	5,  // 45: xaionaro.owon.SetTriggerRequest.source:type_name -> xaionaro.owon.TriggerSource
+	2,  // 46: xaionaro.owon.SetTriggerRequest.coupling:type_name -> xaionaro.owon.Coupling
+	6,  // 47: xaionaro.owon.SetTriggerRequest.slope:type_name -> xaionaro.owon.TriggerSlope
+	7,  // 48: xaionaro.owon.SetTriggerRequest.sweep:type_name -> xaionaro.owon.TriggerSweep
+	23, // 49: xaionaro.owon.SetMeasurementRequest.visible:type_name -> xaionaro.owon.MeasurementSelector
+	9,  // 50: xaionaro.owon.SetGeneratorRequest.waveform:type_name -> xaionaro.owon.GeneratorWaveform
+	11, // 51: xaionaro.owon.SetGeneratorRequest.load:type_name -> xaionaro.owon.GeneratorLoad
+	10, // 52: xaionaro.owon.SetDmmRequest.function:type_name -> xaionaro.owon.DmmFunction
+	17, // 53: xaionaro.owon.SetDmmRequest.current_type:type_name -> xaionaro.owon.DmmCurrentType
+	16, // 54: xaionaro.owon.SetDmmRequest.range:type_name -> xaionaro.owon.DmmRange
+	10, // 55: xaionaro.owon.DmmMeasurement.function:type_name -> xaionaro.owon.DmmFunction
+	56, // 56: xaionaro.owon.DmmMeasurement.captured_at:type_name -> google.protobuf.Timestamp
+	0,  // 57: xaionaro.owon.GetWaveformRequest.channel:type_name -> xaionaro.owon.Channel
+	0,  // 58: xaionaro.owon.Waveform.channel:type_name -> xaionaro.owon.Channel
+	56, // 59: xaionaro.owon.Waveform.captured_at:type_name -> google.protobuf.Timestamp
+	49, // 60: xaionaro.owon.Waveform.metadata:type_name -> xaionaro.owon.WaveformMetadata
+	50, // 61: xaionaro.owon.Waveform.screen_trace:type_name -> xaionaro.owon.ScreenTrace
+	56, // 62: xaionaro.owon.Waveform.capture_started_at:type_name -> google.protobuf.Timestamp
+	57, // 63: xaionaro.owon.SubscribeRequest.interval:type_name -> google.protobuf.Duration
+	23, // 64: xaionaro.owon.SubscribeRequest.measurements:type_name -> xaionaro.owon.MeasurementSelector
+	0,  // 65: xaionaro.owon.SubscribeRequest.waveform_channels:type_name -> xaionaro.owon.Channel
+	0,  // 66: xaionaro.owon.WaveformGap.channel:type_name -> xaionaro.owon.Channel
+	19, // 67: xaionaro.owon.ServiceError.category:type_name -> xaionaro.owon.ServiceErrorCategory
+	56, // 68: xaionaro.owon.Event.timestamp:type_name -> google.protobuf.Timestamp
+	31, // 69: xaionaro.owon.Event.state:type_name -> xaionaro.owon.StateSnapshot
+	51, // 70: xaionaro.owon.Event.waveform:type_name -> xaionaro.owon.Waveform
+	53, // 71: xaionaro.owon.Event.waveform_gap:type_name -> xaionaro.owon.WaveformGap
+	54, // 72: xaionaro.owon.Event.error:type_name -> xaionaro.owon.ServiceError
+	58, // 73: xaionaro.owon.OwonService.GetDeviceInfo:input_type -> google.protobuf.Empty
+	22, // 74: xaionaro.owon.OwonService.GetState:input_type -> xaionaro.owon.GetStateRequest
+	32, // 75: xaionaro.owon.OwonService.Execute:input_type -> xaionaro.owon.ExecuteRequest
+	40, // 76: xaionaro.owon.OwonService.SetChannel:input_type -> xaionaro.owon.SetChannelRequest
+	41, // 77: xaionaro.owon.OwonService.SetAcquisition:input_type -> xaionaro.owon.SetAcquisitionRequest
+	42, // 78: xaionaro.owon.OwonService.SetHorizontal:input_type -> xaionaro.owon.SetHorizontalRequest
+	43, // 79: xaionaro.owon.OwonService.SetTrigger:input_type -> xaionaro.owon.SetTriggerRequest
+	44, // 80: xaionaro.owon.OwonService.SetMeasurement:input_type -> xaionaro.owon.SetMeasurementRequest
+	45, // 81: xaionaro.owon.OwonService.SetGenerator:input_type -> xaionaro.owon.SetGeneratorRequest
+	46, // 82: xaionaro.owon.OwonService.SetDmm:input_type -> xaionaro.owon.SetDmmRequest
+	58, // 83: xaionaro.owon.OwonService.GetDmmMeasurement:input_type -> google.protobuf.Empty
+	58, // 84: xaionaro.owon.OwonService.Run:input_type -> google.protobuf.Empty
+	58, // 85: xaionaro.owon.OwonService.Stop:input_type -> google.protobuf.Empty
+	58, // 86: xaionaro.owon.OwonService.Single:input_type -> google.protobuf.Empty
+	58, // 87: xaionaro.owon.OwonService.Auto:input_type -> google.protobuf.Empty
+	48, // 88: xaionaro.owon.OwonService.GetWaveform:input_type -> xaionaro.owon.GetWaveformRequest
+	52, // 89: xaionaro.owon.OwonService.Subscribe:input_type -> xaionaro.owon.SubscribeRequest
+	21, // 90: xaionaro.owon.OwonService.GetDeviceInfo:output_type -> xaionaro.owon.DeviceInfo
+	31, // 91: xaionaro.owon.OwonService.GetState:output_type -> xaionaro.owon.StateSnapshot
+	33, // 92: xaionaro.owon.OwonService.Execute:output_type -> xaionaro.owon.ExecuteResponse
+	34, // 93: xaionaro.owon.OwonService.SetChannel:output_type -> xaionaro.owon.CommandResult
+	34, // 94: xaionaro.owon.OwonService.SetAcquisition:output_type -> xaionaro.owon.CommandResult
+	34, // 95: xaionaro.owon.OwonService.SetHorizontal:output_type -> xaionaro.owon.CommandResult
+	34, // 96: xaionaro.owon.OwonService.SetTrigger:output_type -> xaionaro.owon.CommandResult
+	34, // 97: xaionaro.owon.OwonService.SetMeasurement:output_type -> xaionaro.owon.CommandResult
+	34, // 98: xaionaro.owon.OwonService.SetGenerator:output_type -> xaionaro.owon.CommandResult
+	34, // 99: xaionaro.owon.OwonService.SetDmm:output_type -> xaionaro.owon.CommandResult
+	47, // 100: xaionaro.owon.OwonService.GetDmmMeasurement:output_type -> xaionaro.owon.DmmMeasurement
+	34, // 101: xaionaro.owon.OwonService.Run:output_type -> xaionaro.owon.CommandResult
+	34, // 102: xaionaro.owon.OwonService.Stop:output_type -> xaionaro.owon.CommandResult
+	34, // 103: xaionaro.owon.OwonService.Single:output_type -> xaionaro.owon.CommandResult
+	34, // 104: xaionaro.owon.OwonService.Auto:output_type -> xaionaro.owon.CommandResult
+	51, // 105: xaionaro.owon.OwonService.GetWaveform:output_type -> xaionaro.owon.Waveform
+	55, // 106: xaionaro.owon.OwonService.Subscribe:output_type -> xaionaro.owon.Event
+	90, // [90:107] is the sub-list for method output_type
+	73, // [73:90] is the sub-list for method input_type
+	73, // [73:73] is the sub-list for extension type_name
+	73, // [73:73] is the sub-list for extension extendee
+	0,  // [0:73] is the sub-list for field type_name
 }
 
 func init() { file_pkg_owonrpc_owon_proto_init() }
@@ -3780,14 +4630,17 @@ func file_pkg_owonrpc_owon_proto_init() {
 	file_pkg_owonrpc_owon_proto_msgTypes[7].OneofWrappers = []any{}
 	file_pkg_owonrpc_owon_proto_msgTypes[15].OneofWrappers = []any{}
 	file_pkg_owonrpc_owon_proto_msgTypes[16].OneofWrappers = []any{}
-	file_pkg_owonrpc_owon_proto_msgTypes[17].OneofWrappers = []any{}
 	file_pkg_owonrpc_owon_proto_msgTypes[18].OneofWrappers = []any{}
-	file_pkg_owonrpc_owon_proto_msgTypes[19].OneofWrappers = []any{}
 	file_pkg_owonrpc_owon_proto_msgTypes[20].OneofWrappers = []any{}
 	file_pkg_owonrpc_owon_proto_msgTypes[21].OneofWrappers = []any{}
 	file_pkg_owonrpc_owon_proto_msgTypes[22].OneofWrappers = []any{}
+	file_pkg_owonrpc_owon_proto_msgTypes[23].OneofWrappers = []any{}
 	file_pkg_owonrpc_owon_proto_msgTypes[24].OneofWrappers = []any{}
-	file_pkg_owonrpc_owon_proto_msgTypes[29].OneofWrappers = []any{
+	file_pkg_owonrpc_owon_proto_msgTypes[25].OneofWrappers = []any{}
+	file_pkg_owonrpc_owon_proto_msgTypes[26].OneofWrappers = []any{}
+	file_pkg_owonrpc_owon_proto_msgTypes[27].OneofWrappers = []any{}
+	file_pkg_owonrpc_owon_proto_msgTypes[29].OneofWrappers = []any{}
+	file_pkg_owonrpc_owon_proto_msgTypes[35].OneofWrappers = []any{
 		(*Event_State)(nil),
 		(*Event_Waveform)(nil),
 		(*Event_WaveformGap)(nil),
@@ -3798,8 +4651,8 @@ func file_pkg_owonrpc_owon_proto_init() {
 		File: protoimpl.DescBuilder{
 			GoPackagePath: reflect.TypeOf(x{}).PkgPath(),
 			RawDescriptor: unsafe.Slice(unsafe.StringData(file_pkg_owonrpc_owon_proto_rawDesc), len(file_pkg_owonrpc_owon_proto_rawDesc)),
-			NumEnums:      16,
-			NumMessages:   30,
+			NumEnums:      20,
+			NumMessages:   36,
 			NumExtensions: 0,
 			NumServices:   1,
 		},

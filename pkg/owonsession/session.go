@@ -357,6 +357,38 @@ func (transaction *Transaction) Execute(
 	return response, nil
 }
 
+// OperationContext derives the configured post-admission operation budget from
+// a live transaction and caller context.
+//
+// Example: a DMM convergence operation keeps caller admission cancellation but
+// receives the session's configured budget after Begin has succeeded.
+func (transaction *Transaction) OperationContext(
+	parent context.Context,
+) (context.Context, context.CancelFunc, error) {
+	if transaction == nil || transaction.session == nil || transaction.execution == nil {
+		return nil, nil, &ErrUnavailable{Operation: "create OWON operation context", Resource: "transaction", Reason: "is unavailable"}
+	}
+	if parent == nil {
+		return nil, nil, &ErrUnavailable{Operation: "create OWON operation context", Resource: "context", Reason: "is nil"}
+	}
+	if transaction.closed.Load() {
+		return nil, nil, &ErrUnavailable{Operation: "create OWON operation context", Resource: "transaction", Reason: "is closed"}
+	}
+	session := transaction.session
+	if session.closed.Load() {
+		return nil, nil, &ErrUnavailable{Operation: "create OWON operation context", Resource: "session", Reason: "is closed"}
+	}
+	if session.backend == nil {
+		return nil, nil, &ErrUnavailable{Operation: "create OWON operation context", Resource: "backend", Reason: "is unavailable"}
+	}
+	if session.admission == nil {
+		return nil, nil, &ErrUnavailable{Operation: "create OWON operation context", Resource: "admission", Reason: "is unavailable"}
+	}
+
+	operationContext, cancel := context.WithTimeout(parent, session.config.OperationTimeout)
+	return operationContext, cancel, nil
+}
+
 // Close prevents further execution and waits for admitted work before releasing session admission.
 // Concurrent calls join the same closure. Close may block indefinitely for an uncooperative
 // backend: caller cancellation or a device deadline cannot detach native ownership.

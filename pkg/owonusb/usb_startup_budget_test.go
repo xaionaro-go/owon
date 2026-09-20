@@ -77,7 +77,7 @@ func verifyStartupPolicy(
 	parent time.Duration,
 	want time.Duration,
 ) {
-	endpoint := &timedBulkEndpoint{ReadChunks: [][]byte{[]byte("OWON,HDS2202S,serial,1.0\n"), []byte("OWON,HDS2202S,serial,1.0\n")}}
+	endpoint := &timedBulkEndpoint{ReadChunks: [][]byte{[]byte("OWON,HDS2202S,serial,1.0\n"), []byte("OWON,HDS2202S,serial,1.0\n")}, QuietProbe: true}
 	session, err := newEndpointSession(endpoint, endpoint, 1024)
 	require.NoError(t, err)
 	opener := &startupResourcesOpener{Resources: &usbResources{session: session}}
@@ -108,12 +108,13 @@ func verifyStartupPolicy(
 		require.Equal(t, start.Add(want), deadline)
 	}
 	endpoint.Deadlines = nil
+	operationStart := time.Now()
 	info, err := instrument.DeviceInfo(context.Background())
 	require.NoError(t, err)
 	require.Equal(t, owonmodel.SerialNumber("serial"), info.Serial)
 	require.Equal(t, "*IDN?\n*IDN?\n", string(endpoint.Written))
 	for _, deadline := range endpoint.Deadlines {
-		require.Equal(t, start.Add(policy), deadline)
+		require.Equal(t, operationStart.Add(policy), deadline)
 	}
 }
 
@@ -142,7 +143,7 @@ func verifyUSBRecoveryIdentity(
 	oldWriter := new(endpointWriter)
 	oldSession, err := newEndpointSession(new(deadlineReader), oldWriter, 1024)
 	require.NoError(t, err)
-	nextEndpoint := &timedBulkEndpoint{ReadChunks: [][]byte{[]byte(identity + "\n"), []byte("ready\n")}}
+	nextEndpoint := &timedBulkEndpoint{ReadChunks: [][]byte{[]byte(identity + "\n"), []byte("ready\n")}, QuietProbe: true}
 	nextSession, err := newEndpointSession(nextEndpoint, nextEndpoint, 1024)
 	require.NoError(t, err)
 	opener := &startupResourcesOpener{Resources: &usbResources{session: nextSession}}

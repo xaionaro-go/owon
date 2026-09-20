@@ -20,6 +20,7 @@ type timedBulkEndpoint struct {
 	WriteDelay time.Duration
 	ReadChunks [][]byte
 	WriteWidth int
+	QuietProbe bool
 	Written    []byte
 	Deadlines  []time.Time
 }
@@ -56,6 +57,12 @@ func (endpoint *timedBulkEndpoint) ReadContext(
 	ctx context.Context,
 	destination []byte,
 ) (int, error) {
+	if endpoint.QuietProbe {
+		endpoint.QuietProbe = false
+		<-ctx.Done()
+
+		return 0, gousb.TransferCancelled
+	}
 	if len(endpoint.ReadChunks) == 0 {
 		<-ctx.Done()
 		return 0, gousb.TransferCancelled

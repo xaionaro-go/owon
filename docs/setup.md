@@ -46,17 +46,20 @@ instrument's serial. Customize both before using them with your instrument.
 | WebUI disconnected | Keep `owond` running and use the same address for the daemon and bridge. Check their terminal errors. |
 | Port 8080 busy | Start `owonweb` with `--listen 127.0.0.1:8081`, then open that port. |
 | Device operation times out | The default budget is 10 seconds per operation; `owond --device-timeout 30s` raises it. See [timeout behavior](reference.md#usb-transactions-and-timeouts). |
+| Instrument powers off | Ensure `owond` is not started with `--no-keep-awake`; startup runs one verified shutdown-timer policy by default. See [keeping the instrument awake](reference.md#keeping-the-instrument-awake). |
 
 ## Run as a systemd service
 
-This is optional; the quick start needs no service installation. Build the tools
-first and complete the USB setup above. Skip `useradd` if `owond` already exists.
-From the checkout, install the daemon and example unit:
+This is optional; the quick start needs no service installation. Complete the USB
+setup above. A systemd unit must execute an installed binary, so build the daemon
+once before installing it. Skip `useradd` if `owond` already exists. From the
+checkout, install the daemon and example unit:
 
 ```sh
 sudo useradd --system --home-dir /nonexistent --shell /usr/sbin/nologin --user-group owond
 sudo groupadd -f plugdev
-sudo install -m 0755 ./bin/owond /usr/local/bin/owond
+go build -o /tmp/owond ./cmd/owond
+sudo install -m 0755 /tmp/owond /usr/local/bin/owond
 sudo install -m 0644 init/owond.service /etc/systemd/system/owond.service
 sudo editor /etc/systemd/system/owond.service
 ```
@@ -64,6 +67,11 @@ sudo editor /etc/systemd/system/owond.service
 In the installed unit, replace the `--serial` value in `ExecStart` with your
 instrument's USB serial. The unit uses
 `plugdev` for USB access and creates `/run/owond` with mode `0750`.
+The startup shutdown-timer policy is enabled by default. Leave `ExecStart`
+unchanged when the instrument firmware accepts the documented `UNLIMITED`
+shutdown-timer token. Add `--no-keep-awake` when the firmware does not support
+that policy; otherwise the daemon will fail startup if the readback is malformed
+or the verified write does not take effect.
 
 To let your login use the service's socket, add it to the `owond` group, then
 log out and back in. Members can control the instrument.
@@ -78,6 +86,6 @@ sudo systemctl enable --now owond.service
 Point clients at the system service's socket instead of the default per-user socket:
 
 ```sh
-./bin/owonctl --address unix:///run/owond/owond.sock info
-./bin/owonweb --grpc unix:///run/owond/owond.sock
+go run ./cmd/owonctl --address unix:///run/owond/owond.sock info
+go run ./cmd/owonweb --grpc unix:///run/owond/owond.sock
 ```

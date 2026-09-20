@@ -419,6 +419,28 @@ func (client *Client) Single(ctx context.Context) (_result *pb.CommandResult, _e
 	return result, nil
 }
 
+// Auto sends the source-backed autoset candidate through the service.
+//
+// Example: the result timestamp records transport completion only; no device readback is inferred.
+func (client *Client) Auto(ctx context.Context) (_result *pb.CommandResult, _err error) {
+	service, serviceErr := client.serviceClient(ctx)
+	if serviceErr != nil {
+		return nil, serviceErr
+	}
+	logger.Tracef(ctx, "Auto")
+	defer
+	// traceAuto reports the operation result without retaining its request context.
+	//
+	// Example: a transport failure remains visible in the exit trace.
+	func() { logger.Tracef(ctx, "/Auto: %v", _err) }()
+	result, err := service.Auto(ctx, new(emptypb.Empty))
+	if err != nil {
+		return nil, fmt.Errorf("send OWON autoset candidate: %w", err)
+	}
+
+	return result, nil
+}
+
 // Waveform returns raw waveform bytes and verified metadata.
 //
 // Example: clients archive Data unchanged until sample encoding is confirmed.
